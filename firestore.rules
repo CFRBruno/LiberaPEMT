@@ -1,14 +1,17 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isPcm() {
-      return request.auth != null
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'pcm';
-    }
-    // Qualquer usuário logado lê; só PCM escreve (equipamentos, snapshots, usuários).
-    match /{col}/{id} {
-      allow read: if request.auth != null;
-      allow write: if isPcm();
-    }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isPcm() { return request.auth != null && me().role == 'pcm' && me().ativo != false; }
+    function isAdmin() { return isPcm() && me().admin == true; }
+
+    // Operação: qualquer usuário logado lê; só PCM escreve.
+    match /equipamentos/{id} { allow read: if request.auth != null; allow write: if isPcm(); }
+    match /snapshots/{id}    { allow read: if request.auth != null; allow write: if isPcm(); }
+    match /frota/{id}        { allow read: if request.auth != null; allow write: if isPcm(); }
+    match /config/{id}       { allow read: if request.auth != null; allow write: if isPcm(); }
+
+    // Membros: todos leem (nomes dos responsáveis); só ADMIN (Bruno e Claudio) cria/edita.
+    match /users/{uid} { allow read: if request.auth != null; allow write: if isAdmin(); }
   }
 }

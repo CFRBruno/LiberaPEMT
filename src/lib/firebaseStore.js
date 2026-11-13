@@ -20,6 +20,7 @@ export const auth = {
     return onAuthStateChanged(fbAuth, async (u) => {
       if (!u) return cb(null)
       const s = await getDoc(doc(db, 'users', u.uid))
+      if (s.exists() && s.data().ativo === false) { await signOut(fbAuth); return cb(null) }
       cb(s.exists() ? { uid: u.uid, ...s.data() } : null)
     })
   },
@@ -28,12 +29,12 @@ export const auth = {
   },
   signOut: () => signOut(fbAuth),
   // Cria o usuário sem deslogar o PCM (usa uma segunda instância do app).
-  async createUser({ username, nome, role, setor, password }) {
+  async createUser({ username, nome, role, setor, password, admin }) {
     const sec = initializeApp(cfg, 'sec' + Date.now())
     const secAuth = getAuth(sec)
     try {
       const c = await createUserWithEmailAndPassword(secAuth, mail(username), password)
-      await setDoc(doc(db, 'users', c.user.uid), { username: username.trim().toLowerCase(), nome, role, setor: setor || null })
+      await setDoc(doc(db, 'users', c.user.uid), { username: username.trim().toLowerCase(), nome, role, setor: setor || null, admin: !!admin, ativo: true })
     } catch (e) {
       throw new Error(e.code === 'auth/email-already-in-use' ? 'Usuário já existe.' : e.code === 'auth/weak-password' ? 'Senha fraca (mín. 6 caracteres).' : e.message)
     } finally { await signOut(secAuth) }

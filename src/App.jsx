@@ -12,7 +12,7 @@ import Frota from './components/Frota.jsx'
 import TaxaPill from './components/TaxaPill.jsx'
 import { categoria, tipoUsuario } from './lib/constants.js'
 
-const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['import', 'Importar'], ['frota', 'Frota'], ['chart', 'Evolução'], ['hist', 'Histórico'], ['users', 'Usuários']]
+const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['import', 'Importar'], ['frota', 'Frota'], ['chart', 'Evolução'], ['hist', 'Histórico'], ['users', 'Membros']]
 const TEC_TABS = [['tasks', 'Tarefas do dia']] // leitores: tela única, sem abas
 
 export default function App() {
@@ -28,7 +28,7 @@ export default function App() {
       if (!user || e.altKey || e.ctrlKey || e.metaKey) return
       if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return
       if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName) || document.querySelector('[data-modal]')) return
-      const list = (user.role === 'pcm' ? PCM_TABS : TEC_TABS).map(([k]) => k)
+      const list = (user.role === 'pcm' ? PCM_TABS.filter(([k]) => k !== 'users' || user.admin) : TEC_TABS).map(([k]) => k)
       setTab((t) => {
         const i = Math.max(0, list.indexOf(t ?? list[0]))
         return list[(i + (e.key === 'ArrowRight' ? 1 : -1) + list.length) % list.length]
@@ -43,7 +43,7 @@ export default function App() {
   if (!user) return <StoreCtx.Provider value={store}><Login /></StoreCtx.Provider>
 
   const pcm = user.role === 'pcm'
-  const tabs = pcm ? PCM_TABS : TEC_TABS
+  const tabs = pcm ? PCM_TABS.filter(([k]) => k !== 'users' || user.admin) : TEC_TABS
   const cur = tabs.some(([k]) => k === tab) ? tab : tabs[0][0]
   return (
     <StoreCtx.Provider value={store}>
@@ -68,7 +68,7 @@ export default function App() {
         {cur === 'import' && <ImportView />}
         {cur === 'chart' && <Evolution />}
         {cur === 'hist' && <History />}
-        {cur === 'users' && <Users />}
+        {cur === 'users' && user.admin && <Users me={user} />}
         {cur === 'frota' && <Frota user={user} />}
       </main>
     </StoreCtx.Provider>

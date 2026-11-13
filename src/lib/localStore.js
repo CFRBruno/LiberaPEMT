@@ -7,10 +7,12 @@ const write = (c, o) => { localStorage.setItem(K(c), JSON.stringify(o)); emit(c)
 
 if (!localStorage.getItem(K('users'))) {
   write('users', {
-    pcm: { username: 'pcm', nome: 'PCM Demo', role: 'pcm', senha: 'pcm123' },
+    pcm: { username: 'pcm', nome: 'PCM Demo', role: 'pcm', admin: true, senha: 'pcm123' },
     tecnico: { username: 'tecnico', nome: 'Técnico Demo', role: 'tecnico', setor: 'manutencao', senha: 'tecnico123' },
   })
 }
+// garante admin no usuário demo mesmo em dados antigos
+{ const u = read('users'); if (u.pcm && u.pcm.admin == null) { u.pcm.admin = true; write('users', u) } }
 let session = (() => { try { return JSON.parse(sessionStorage.getItem('lpemt:session')) } catch { return null } })()
 const authSubs = []
 const setSession = (u) => { session = u; sessionStorage.setItem('lpemt:session', JSON.stringify(u)); authSubs.forEach((f) => f(u)) }
@@ -21,14 +23,15 @@ export const auth = {
   async signIn(username, senha) {
     const u = read('users')[username.trim().toLowerCase()]
     if (!u || u.senha !== senha) throw new Error('Usuário ou senha inválidos.')
-    setSession({ uid: u.username, username: u.username, nome: u.nome, role: u.role })
+    if (u.ativo === false) throw new Error('Usuário desativado.')
+    setSession({ uid: u.username, username: u.username, nome: u.nome, role: u.role, setor: u.setor, admin: !!u.admin })
   },
   async signOut() { setSession(null) },
-  async createUser({ username, nome, role, setor, password }) {
+  async createUser({ username, nome, role, setor, password, admin }) {
     const id = username.trim().toLowerCase()
     const u = read('users')
     if (u[id]) throw new Error('Usuário já existe.')
-    u[id] = { username: id, nome, role, setor: setor || null, senha: password }
+    u[id] = { username: id, nome, role, setor: setor || null, admin: !!admin, ativo: true, senha: password }
     write('users', u)
   },
 }

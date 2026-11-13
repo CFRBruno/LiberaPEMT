@@ -12,7 +12,7 @@ npm run dev      # sem .env = MODO DEMONSTRAÇÃO (pcm/pcm123 e tecnico/tecnico1
 1. Console Firebase → criar projeto → **Authentication** (ativar "E-mail/senha") e **Firestore** (modo produção).
 2. Copiar as chaves do app Web para `.env` (modelo em `.env.example`).
 3. Colar `firestore.rules` em Firestore → Regras.
-4. Criar o **primeiro PCM** manualmente: em Authentication, adicionar usuário `SEUUSUARIO@liberapemt.app` + senha; em Firestore, criar `users/<UID>` com `{ username: "seuusuario", nome: "Seu Nome", role: "pcm" }`. Os demais usuários são criados na aba **Usuários**.
+4. Criar os **administradores** (Bruno e Claudio) manualmente: em Authentication, adicionar `usuario@liberapemt.app` + senha; em Firestore, criar `users/<UID>` com `{ username: "bruno", nome: "Bruno", role: "pcm", admin: true, ativo: true }`. Só administradores veem a aba **Membros** e criam/editam/desativam usuários; as regras do Firestore também impõem isso.
 
 ## Como funciona
 - **Planejamento**: visão Semana (Seg–Sex) ou Mês (só dias úteis), com arrastar e soltar.
