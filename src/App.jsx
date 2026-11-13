@@ -12,7 +12,7 @@ import Frota from './components/Frota.jsx'
 import TaxaPill from './components/TaxaPill.jsx'
 import { categoria, tipoUsuario } from './lib/constants.js'
 
-const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['import', 'Importar'], ['frota', 'Frota'], ['chart', 'Evolução'], ['hist', 'Histórico'], ['users', 'Membros']]
+const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['chart', 'Evolução'], ['frota', 'Frota'], ['hist', 'Histórico'], ['import', 'Importar'], ['users', 'Membros']]
 const TEC_TABS = [['tasks', 'Tarefas do dia']] // leitores: tela única, sem abas
 
 // Chevron fino que indica o atalho ← / → (só em telas grandes)
@@ -72,7 +72,7 @@ export default function App() {
         {tabs.length > 1 && (
           <div className="mx-auto flex max-w-[1600px] items-center gap-1 px-2">
             <Seta dir={-1} on={flash === -1} onClick={() => { mover(-1); ping(-1) }} />
-            <nav className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
+            <nav className="flex min-w-0 gap-1 overflow-x-auto">
               {tabs.map(([k, l]) => (
                 <button key={k} tabIndex={-1} onClick={() => setTab(k)} className={`navtab whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${cur === k ? 'on text-brand [text-shadow:0_0_10px_rgb(239_128_36/.5)]' : 'text-mute hover:text-ink'}`}>{l}</button>
               ))}
