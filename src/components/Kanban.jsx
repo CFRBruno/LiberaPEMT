@@ -53,7 +53,7 @@ export default function Kanban({ user }) {
       </div>
       {foraSemana > 0 && <p className="mb-2 text-xs text-mute">{foraSemana} equipamento(s) planejado(s) em outras semanas.</p>}
       <p className="mb-2 text-xs text-mute">Arraste os cartões entre as colunas (no celular: abra o cartão e use “Dia”).</p>
-      <div className="flex gap-3 overflow-x-auto pb-4">
+      <div className="stagger flex gap-3 overflow-x-auto pb-4">
         <Column title="Sem previsão" k="sem" items={semData} />
         {days.map((d) => <Column key={d} k={d} title={dow(d)} sub={fmtShort(d)} items={ativos.filter((e) => e.dia === d)} today={d === todayISO()} />)}
       </div>

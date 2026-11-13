@@ -31,7 +31,7 @@ export default function Tasks({ user }) {
       <label className="mb-3 flex items-center gap-2 text-sm"><input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} /> Só as minhas tarefas</label>
       <h2 className="mb-2 font-semibold">{dow(day)} {fmtBR(day)} · {list.length} equipamento(s)</h2>
       {list.length === 0 && <p className="rounded bg-panel p-4 text-mute">Nada programado para este dia.</p>}
-      <div className="space-y-3">
+      <div key={day} className="stagger space-y-3">
         {list.map((e) => (
           <article key={e.id} className={`rounded-xl p-3 shadow ${isLiberado(e) ? 'bg-green-500/10 ring-1 ring-green-500' : 'bg-panel'}`}>
             <div className="flex items-center justify-between"><b className="tagid text-lg">{e.tag}{isLiberado(e) && <span className="ml-2 text-sm text-green-400">✔ Liberado</span>}</b>

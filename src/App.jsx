@@ -35,12 +35,12 @@ export default function App() {
         </div>
         <nav className="mx-auto flex max-w-[1600px] gap-1 overflow-x-auto px-2">
           {tabs.map(([k, l]) => (
-            <button key={k} onClick={() => setTab(k)} className={`whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium ${cur === k ? 'border-brand text-brand [text-shadow:0_0_10px_rgb(239_128_36/.5)]' : 'border-transparent text-mute hover:text-ink'}`}>{l}</button>
+            <button key={k} onClick={() => setTab(k)} className={`navtab whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${cur === k ? 'on text-brand [text-shadow:0_0_10px_rgb(239_128_36/.5)]' : 'text-mute hover:text-ink'}`}>{l}</button>
           ))}
         </nav>
         {store.demo && <div className="bg-brand/90 px-3 py-1 text-center text-xs font-medium text-black">Modo demonstração: dados salvos só neste navegador. Configure o Firebase (.env) para uso real.</div>}
       </header>
-      <main className="mx-auto max-w-[1600px] p-3">
+      <main key={cur} className="tab-enter mx-auto max-w-[1600px] p-3">
         {cur === 'plan' && <Kanban user={user} />}
         {cur === 'tasks' && <Tasks user={user} />}
         {cur === 'import' && <ImportView />}

@@ -56,3 +56,20 @@ body {
 
 ::-webkit-scrollbar { height: 8px; width: 8px; }
 ::-webkit-scrollbar-thumb { background: #263249; border-radius: 8px; }
+
+/* ===== Animações ===== */
+@keyframes tabIn { from { opacity: 0; transform: translateY(14px) scale(.99); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.tab-enter { animation: tabIn .45s cubic-bezier(.22, 1, .36, 1) both; }
+.stagger > * { animation: popIn .5s cubic-bezier(.22, 1, .36, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: .04s } .stagger > *:nth-child(2) { animation-delay: .09s }
+.stagger > *:nth-child(3) { animation-delay: .14s } .stagger > *:nth-child(4) { animation-delay: .19s }
+.stagger > *:nth-child(5) { animation-delay: .24s } .stagger > *:nth-child(n+6) { animation-delay: .29s }
+
+/* sublinhado neon que desliza para a aba ativa */
+.navtab { position: relative; }
+.navtab::after { content: ''; position: absolute; left: 12%; right: 12%; bottom: 0; height: 2px; background: var(--color-brand);
+  box-shadow: 0 0 10px var(--color-brand); transform: scaleX(0); transition: transform .35s cubic-bezier(.22, 1, .36, 1); }
+.navtab.on::after { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) { .tab-enter, .stagger > * { animation: none !important; } .navtab::after { transition: none; } }
