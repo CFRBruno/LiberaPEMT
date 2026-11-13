@@ -23,3 +23,7 @@ npm run dev      # sem .env = MODO DEMONSTRAÇÃO (pcm/pcm123 e tecnico/tecnico1
 - **Evolução**: serviços realizados por semana (Liberação, Pintura, Lavagem) e indisponíveis restantes, tendo como base a 1ª importação do mês.
 
 Exemplos de importação em `exemplos/`.
+
+### Observações de login (Firebase)
+- Senhas sem limite mínimo: o sistema acrescenta internamente um prefixo, pois o Firebase exige 6+ caracteres. Contas criadas à mão no console (senha comum) continuam entrando.
+- O login (usuário) pode ser renomeado na aba **Membros**; o mapa `logins/<usuário>` aponta para o e-mail interno, que nunca muda.

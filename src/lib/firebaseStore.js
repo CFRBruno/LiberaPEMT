@@ -13,6 +13,9 @@ const fbAuth = getAuth(app)
 const db = getFirestore(app)
 // Usuário/senha -> e-mail interno fictício (o usuário nunca vê isso).
 const mail = (u) => `${u.trim().toLowerCase()}@liberapemt.app`
+// O Firebase exige senha com 6+ caracteres; o prefixo permite ao usuário ter qualquer senha (mesmo curta).
+const PW = 'liberapemt:'
+export const authEmailOf = (u) => u.authEmail || mail(u.username)
 
 export const demo = false
 export const auth = {
@@ -25,7 +28,13 @@ export const auth = {
     })
   },
   async signIn(username, senha) {
-    try { await signInWithEmailAndPassword(fbAuth, mail(username), senha) } catch { throw new Error('Usuário ou senha inválidos.') }
+    const u = username.trim().toLowerCase()
+    let email = mail(u)
+    try { const l = await getDoc(doc(db, 'logins', u)); if (l.exists()) email = l.data().email } catch { /* usa o padrão */ }
+    for (const pw of [PW + senha, senha]) { // 2ª tentativa: contas antigas criadas à mão no console
+      try { await signInWithEmailAndPassword(fbAuth, email, pw); return } catch { /* tenta a próxima */ }
+    }
+    throw new Error('Usuário ou senha inválidos.')
   },
   signOut: () => signOut(fbAuth),
   // Cria o usuário sem deslogar o PCM (usa uma segunda instância do app).
@@ -33,10 +42,13 @@ export const auth = {
     const sec = initializeApp(cfg, 'sec' + Date.now())
     const secAuth = getAuth(sec)
     try {
-      const c = await createUserWithEmailAndPassword(secAuth, mail(username), password)
-      await setDoc(doc(db, 'users', c.user.uid), { username: username.trim().toLowerCase(), nome, role, setor: setor || null, admin: !!admin, ativo: true })
+      const email = mail(username)
+      const c = await createUserWithEmailAndPassword(secAuth, email, PW + password)
+      const un = username.trim().toLowerCase()
+      await setDoc(doc(db, 'users', c.user.uid), { username: un, authEmail: email, nome, role, setor: setor || null, admin: !!admin, ativo: true })
+      await setDoc(doc(db, 'logins', un), { email })
     } catch (e) {
-      throw new Error(e.code === 'auth/email-already-in-use' ? 'Usuário já existe.' : e.code === 'auth/weak-password' ? 'Senha fraca (mín. 6 caracteres).' : e.message)
+      throw new Error(e.code === 'auth/email-already-in-use' ? 'Usuário já existe.' : e.message)
     } finally { await signOut(secAuth) }
   },
 }

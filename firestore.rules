@@ -11,6 +11,9 @@ service cloud.firestore {
     match /frota/{id}        { allow read: if request.auth != null; allow write: if isPcm(); }
     match /config/{id}       { allow read: if request.auth != null; allow write: if isPcm(); }
 
+    // Mapa login -> e-mail interno: leitura pontual (get) pública para permitir o login; só admin escreve.
+    match /logins/{name} { allow get: if true; allow list: if false; allow write: if isAdmin(); }
+
     // Membros: todos leem (nomes dos responsáveis); só ADMIN (Bruno e Claudio) cria/edita.
     match /users/{uid} { allow read: if request.auth != null; allow write: if isAdmin(); }
   }

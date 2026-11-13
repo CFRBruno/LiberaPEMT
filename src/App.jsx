@@ -15,6 +15,17 @@ import { categoria, tipoUsuario } from './lib/constants.js'
 const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['import', 'Importar'], ['frota', 'Frota'], ['chart', 'Evolução'], ['hist', 'Histórico'], ['users', 'Membros']]
 const TEC_TABS = [['tasks', 'Tarefas do dia']] // leitores: tela única, sem abas
 
+// Chevron fino que indica o atalho ← / → (só em telas grandes)
+const Seta = ({ dir, on, onClick }) => (
+  <button tabIndex={-1} onClick={onClick} title={dir < 0 ? 'Aba anterior (←)' : 'Próxima aba (→)'} aria-label={dir < 0 ? 'Aba anterior' : 'Próxima aba'}
+    className={`hidden shrink-0 items-center gap-1 rounded-md px-1.5 py-1 transition-all duration-200 lg:flex ${on ? 'scale-110 text-brand' : 'text-mute/60 hover:text-ink'}`}>
+    {dir > 0 && <kbd className="rounded border px-1 text-[10px] leading-4">→</kbd>}
+    <svg width="9" height="16" viewBox="0 0 9 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d={dir < 0 ? 'M7.5 1 1.5 8l6 7' : 'M1.5 1l6 7-6 7'} /></svg>
+    {dir < 0 && <kbd className="rounded border px-1 text-[10px] leading-4">←</kbd>}
+  </button>
+)
+
 export default function App() {
   const [store, setStore] = useState(null)
   const [user, setUser] = useState(undefined)
@@ -22,22 +33,25 @@ export default function App() {
   useEffect(() => { loadStore().then(setStore) }, [])
   useEffect(() => (store ? store.auth.onChange(setUser) : undefined), [store])
 
-  // Atalho no PC: ← / → alternam entre as abas (ignorado ao digitar ou com janela aberta)
+  // Atalhos no PC: ← / → alternam entre as abas. Esc tira o foco do campo atual (sem apagar o texto),
+  // e então as setas voltam a navegar. Ignorado com janela aberta.
+  const [flash, setFlash] = useState(null)
+  const lista = user ? (user.role === 'pcm' ? PCM_TABS.filter(([k]) => k !== 'users' || user.admin) : TEC_TABS).map(([k]) => k) : []
+  const mover = (dir) => setTab((t) => { const i = Math.max(0, lista.indexOf(t ?? lista[0])); return lista[(i + dir + lista.length) % lista.length] })
+  const ping = (dir) => { setFlash(dir); setTimeout(() => setFlash(null), 260) }
   useEffect(() => {
     const onKey = (e) => {
       if (!user || e.altKey || e.ctrlKey || e.metaKey) return
-      if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return
-      if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName) || document.querySelector('[data-modal]')) return
-      const list = (user.role === 'pcm' ? PCM_TABS.filter(([k]) => k !== 'users' || user.admin) : TEC_TABS).map(([k]) => k)
-      setTab((t) => {
-        const i = Math.max(0, list.indexOf(t ?? list[0]))
-        return list[(i + (e.key === 'ArrowRight' ? 1 : -1) + list.length) % list.length]
-      })
-      e.preventDefault()
+      const campo = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)
+      if (e.key === 'Escape') { if (campo) { document.activeElement.blur(); e.preventDefault() } return }
+      if (!['ArrowLeft', 'ArrowRight'].includes(e.key) || lista.length < 2) return
+      if (campo || document.querySelector('[data-modal]')) return
+      const dir = e.key === 'ArrowRight' ? 1 : -1
+      mover(dir); ping(dir); e.preventDefault()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [user])
+  }, [user]) // eslint-disable-line
 
   if (!store || user === undefined) return <p className="p-8 text-mute">Carregando…</p>
   if (!user) return <StoreCtx.Provider value={store}><Login /></StoreCtx.Provider>
@@ -55,11 +69,17 @@ export default function App() {
           <button onClick={() => store.auth.signOut()} className="rounded-lg border px-3 py-1.5 text-sm">Sair</button>
         </div>
         {!pcm && <div className="label mx-auto max-w-[1600px] truncate px-3 pb-2">{user.nome} · {tipoUsuario(user)}</div>}
-        {tabs.length > 1 && <nav className="mx-auto flex max-w-[1600px] gap-1 overflow-x-auto px-2">
-          {tabs.map(([k, l]) => (
-            <button key={k} onClick={() => setTab(k)} className={`navtab whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${cur === k ? 'on text-brand [text-shadow:0_0_10px_rgb(239_128_36/.5)]' : 'text-mute hover:text-ink'}`}>{l}</button>
-          ))}
-        </nav>}
+        {tabs.length > 1 && (
+          <div className="mx-auto flex max-w-[1600px] items-center gap-1 px-2">
+            <Seta dir={-1} on={flash === -1} onClick={() => { mover(-1); ping(-1) }} />
+            <nav className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
+              {tabs.map(([k, l]) => (
+                <button key={k} tabIndex={-1} onClick={() => setTab(k)} className={`navtab whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${cur === k ? 'on text-brand [text-shadow:0_0_10px_rgb(239_128_36/.5)]' : 'text-mute hover:text-ink'}`}>{l}</button>
+              ))}
+            </nav>
+            <Seta dir={1} on={flash === 1} onClick={() => { mover(1); ping(1) }} />
+          </div>
+        )}
         {store.demo && <div className="truncate bg-brand/90 px-3 py-1 text-center text-xs font-medium text-black">Modo demonstração · dados só neste navegador</div>}
       </header>
       <main key={cur} className="tab-enter mx-auto max-w-[1600px] p-3">
