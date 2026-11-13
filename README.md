@@ -15,6 +15,7 @@ npm run dev      # sem .env = MODO DEMONSTRAÇÃO (pcm/pcm123 e tecnico/tecnico1
 4. Criar o **primeiro PCM** manualmente: em Authentication, adicionar usuário `SEUUSUARIO@liberapemt.app` + senha; em Firestore, criar `users/<UID>` com `{ username: "seuusuario", nome: "Seu Nome", role: "pcm" }`. Os demais usuários são criados na aba **Usuários**.
 
 ## Como funciona
+- **Planejamento**: visão Semana (Seg–Sex) ou Mês (só dias úteis), com arrastar e soltar.
 - **PCM** (categoria Editor): importa (Excel ou texto colado — mesmo resultado), arrasta equipamentos para os dias, define serviços/responsáveis, marca resultado (Realizado/Adiado/Fora do prazo/Não realizado), data de realização e observações.
 - **Manutenção, Pintura e Lavagem** (tipos de usuário, categoria Leitor): só leitura das tarefas do dia (atualiza em tempo real), com filtro "só as minhas".
 - **Importações** nunca substituem: cada uma grava um retrato datado (`snapshots`) e atualiza por TAG; quem sai da lista vira "liberado" com data. Serviços e dias já programados são preservados.

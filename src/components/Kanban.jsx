@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCol, useStore } from '../lib/store.js'
-import { addDays, dow, fmtShort, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
+import { addDays, addMes, dow, fmtShort, MESES, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
+import Mensal from './Mensal.jsx'
 import { STATUS_CLS } from '../lib/constants.js'
 import { ServiceChip } from './ServiceChips.jsx'
 import { isLiberado } from '../lib/liberado.js'
@@ -12,6 +13,8 @@ export default function Kanban({ user }) {
   const users = useCol('users')
   const [ws, setWs] = useState(weekStart(proxDiaUtil(todayISO())))
   const [open, setOpen] = useState(null)
+  const [modo, setModo] = useState('semana')
+  const [mes, setMes] = useState(proxDiaUtil(todayISO()).slice(0, 7))
   const [filter, setFilter] = useState('')
   const ativos = useMemo(() => eqs.filter((e) => e.ativo).filter((e) => !filter || `${e.tag} ${e.modelo} ${e.descricao}`.toLowerCase().includes(filter.toLowerCase())), [eqs, filter])
   const days = [0, 1, 2, 3, 4].map((i) => addDays(ws, i))
@@ -65,7 +68,7 @@ export default function Kanban({ user }) {
   useEffect(() => {
     const alvo = days.includes(todayISO()) ? todayISO() : days[0]
     setAtiva(alvo); goTo(alvo, false)
-  }, [ws]) // eslint-disable-line
+  }, [ws, modo]) // eslint-disable-line
   const onScroll = () => {
     const c = strip.current; if (!c) return
     const kids = [...c.querySelectorAll('[data-col]')]
@@ -74,15 +77,27 @@ export default function Kanban({ user }) {
     setAtiva(near?.dataset.col)
   }
 
+  const seg = (m, l) => <button onClick={() => setModo(m)} className={`px-3 py-1 text-sm ${modo === m ? 'bg-brand' : 'text-mute'}`}>{l}</button>
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <button onClick={() => setWs(addDays(ws, -7))} className="rounded-lg bg-panel px-3 py-1 shadow">←</button>
-        <b>Semana {fmtShort(ws)} – {fmtShort(addDays(ws, 4))}</b>
-        <button onClick={() => setWs(addDays(ws, 7))} className="rounded-lg bg-panel px-3 py-1 shadow">→</button>
-        <button onClick={() => setWs(weekStart(proxDiaUtil(todayISO())))} className="rounded-lg bg-panel px-3 py-1 text-sm shadow">Hoje</button>
+        <div className="flex overflow-hidden rounded-lg border">{seg('semana', 'Semana')}{seg('mes', 'Mês')}</div>
+        {modo === 'semana' ? (<>
+          <button onClick={() => setWs(addDays(ws, -7))} className="rounded-lg bg-panel px-3 py-1 shadow">←</button>
+          <b>Semana {fmtShort(ws)} – {fmtShort(addDays(ws, 4))}</b>
+          <button onClick={() => setWs(addDays(ws, 7))} className="rounded-lg bg-panel px-3 py-1 shadow">→</button>
+          <button onClick={() => setWs(weekStart(proxDiaUtil(todayISO())))} className="rounded-lg bg-panel px-3 py-1 text-sm shadow">Hoje</button>
+        </>) : (<>
+          <button onClick={() => setMes(addMes(mes, -1))} className="rounded-lg bg-panel px-3 py-1 shadow">←</button>
+          <b>{MESES[+mes.slice(5, 7) - 1]} {mes.slice(0, 4)}</b>
+          <button onClick={() => setMes(addMes(mes, 1))} className="rounded-lg bg-panel px-3 py-1 shadow">→</button>
+          <button onClick={() => setMes(proxDiaUtil(todayISO()).slice(0, 7))} className="rounded-lg bg-panel px-3 py-1 text-sm shadow">Hoje</button>
+        </>)}
         <input placeholder="Buscar TAG/modelo…" value={filter} onChange={(e) => setFilter(e.target.value)} className="ml-auto rounded-lg border px-2 py-1 text-sm" />
       </div>
+      {modo === 'mes' ? (
+        <div className="tab-enter"><Mensal mes={mes} ativos={ativos} semData={semData} move={move} onOpen={setOpen} card={card} /></div>
+      ) : (<>
       {foraSemana > 0 && <p className="mb-2 text-xs text-mute">{foraSemana} equipamento(s) planejado(s) em outras semanas.</p>}
       <p className="mb-2 hidden text-xs text-mute lg:block">Arraste os cartões entre as colunas. Setas ← → trocam de aba.</p>
       {/* atalhos de dia (só celular/tablet) */}
@@ -96,6 +111,7 @@ export default function Kanban({ user }) {
       <div ref={strip} onScroll={onScroll} className="stagger -mx-3 flex items-start snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 lg:mx-0 lg:grid lg:items-stretch lg:h-[calc(100dvh-15rem)] lg:min-h-[26rem] lg:grid-cols-[1.1fr_repeat(5,minmax(0,1fr))] lg:grid-rows-1 lg:overflow-visible lg:px-0 lg:pb-0">
         {cols.map(column)}
       </div>
+      </>)}
       {open && <EquipModal eq={eqs.find((e) => e.id === open)} users={users} onClose={() => setOpen(null)} weekStartISO={ws} />}
     </div>
   )

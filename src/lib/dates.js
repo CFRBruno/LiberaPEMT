@@ -12,3 +12,16 @@ export const dow = (s) => DIAS[parseISO(s).getDay()]
 export const nowStamp = () => { const d = new Date(); return `${iso(d)}T${p(d.getHours())}:${p(d.getMinutes())}` }
 // Sáb/Dom -> próxima segunda (a semana de trabalho é Seg–Sex)
 export const proxDiaUtil = (s) => { const k = parseISO(s).getDay(); return k === 6 ? addDays(s, 2) : k === 0 ? addDays(s, 1) : s }
+// Dias úteis (Seg–Sex) de um mês 'YYYY-MM', agrupados por semana: [{ ws, dias: [iso|null x5] }]
+export const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+export const addMes = (ym, n) => { const d = new Date(+ym.slice(0, 4), +ym.slice(5, 7) - 1 + n, 1); return `${d.getFullYear()}-${p(d.getMonth() + 1)}` }
+export const semanasUteis = (ym) => {
+  const ultimo = new Date(+ym.slice(0, 4), +ym.slice(5, 7), 0).getDate()
+  const semanas = {}
+  for (let i = 1; i <= ultimo; i++) {
+    const d = `${ym}-${p(i)}`; const k = parseISO(d).getDay()
+    if (k === 0 || k === 6) continue
+    const ws = weekStart(d); (semanas[ws] ||= [null, null, null, null, null])[k - 1] = d
+  }
+  return Object.entries(semanas).map(([ws, dias]) => ({ ws, dias }))
+}
