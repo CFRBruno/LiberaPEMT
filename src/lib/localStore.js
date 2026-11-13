@@ -14,6 +14,8 @@ if (!localStorage.getItem(K('users'))) {
 // garante admin no usuário demo mesmo em dados antigos
 { const u = read('users'); if (u.pcm && u.pcm.admin == null) { u.pcm.admin = true; write('users', u) } }
 let session = (() => { try { return JSON.parse(sessionStorage.getItem('lpemt:session')) } catch { return null } })()
+// Sessão antiga (salva antes de existir 'admin') é recarregada a partir do cadastro atual
+if (session) { const u = read('users')[session.username]; session = u && u.ativo !== false ? { uid: u.username, username: u.username, nome: u.nome, role: u.role, setor: u.setor, admin: !!u.admin } : null }
 const authSubs = []
 const setSession = (u) => { session = u; sessionStorage.setItem('lpemt:session', JSON.stringify(u)); authSubs.forEach((f) => f(u)) }
 
