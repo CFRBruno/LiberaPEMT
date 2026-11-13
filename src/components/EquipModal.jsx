@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useStore } from '../lib/store.js'
-import { RESULTADOS, SERVICOS, SETORES } from '../lib/constants.js'
+import { autoResp, RESULTADOS, SERVICOS, SETORES } from '../lib/constants.js'
 import { addDays, dow, fmtBRtime, fmtShort, todayISO, weekStart } from '../lib/dates.js'
 
 export default function EquipModal({ eq, users, onClose }) {
@@ -13,7 +13,7 @@ export default function EquipModal({ eq, users, onClose }) {
   const base = weekStart(dia || todayISO())
   const upd = (id, patch) => setServicos((l) => l.map((s) => (s.id === id ? { ...s, ...patch } : s)))
   const setRes = (s, r) => upd(s.id, { resultado: r, dataRealizacao: r === 'realizado' ? s.dataRealizacao || todayISO() : s.dataRealizacao || null })
-  const toggleResp = (s, u) => upd(s.id, { resp: s.resp?.includes(u) ? s.resp.filter((x) => x !== u) : [...(s.resp || []), u] })
+  const toggleResp = (s, u) => { if (autoResp(s, users).includes(u)) return; upd(s.id, { resp: s.resp?.includes(u) ? s.resp.filter((x) => x !== u) : [...(s.resp || []), u] }) }
   const save = async () => {
     await store.batch([{ col: 'equipamentos', id: eq.id, merge: true, data: { dia: dia || null, obs, servicos } }])
     onClose()
@@ -59,7 +59,8 @@ export default function EquipModal({ eq, users, onClose }) {
             <div className="mt-1 flex flex-wrap gap-1 text-xs">
               <span className="text-mute">Responsáveis:</span>
               {tecnicos.length === 0 && <i className="text-mute">cadastre técnicos na aba Usuários</i>}
-              {tecnicos.map((u) => <button key={u.id} onClick={() => toggleResp(s, u.username)} className={`rounded-full border px-2 ${s.resp?.includes(u.username) ? 'bg-brand text-white' : 'bg-panel'}`}>{u.nome} <small className="opacity-60">{SETORES[u.setor] || 'Manutenção'}</small></button>)}
+              {tecnicos.map((u) => { const auto = autoResp(s, users).includes(u.username); const on = auto || s.resp?.includes(u.username)
+                return <button key={u.id} onClick={() => toggleResp(s, u.username)} title={auto ? 'Atribuído automaticamente pelo setor' : ''} className={`rounded-full border px-2 ${on ? 'bg-brand' : 'bg-panel'} ${auto ? 'cursor-default' : ''}`}>{auto && '🔒 '}{u.nome} <small className="opacity-60">{SETORES[u.setor] || 'Manutenção'}</small></button> })}
             </div>
             <textarea placeholder="Observação do serviço…" value={s.obs || ''} onChange={(e) => upd(s.id, { obs: e.target.value })} className="mt-1 w-full rounded-lg border p-1 text-sm" rows={2} />
           </div>

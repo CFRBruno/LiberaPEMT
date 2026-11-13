@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useCol } from '../lib/store.js'
 import { addDays, dow, fmtBR, fmtShort, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
-import { STATUS_CLS } from '../lib/constants.js'
+import { respEfetivos, STATUS_CLS } from '../lib/constants.js'
 import { StatusPill } from './ServiceChips.jsx'
 import { isLiberado } from '../lib/liberado.js'
 
@@ -15,7 +15,7 @@ export default function Tasks({ user }) {
   const ws = weekStart(day)
   const days = [0, 1, 2, 3, 4].map((i) => addDays(ws, i))
   const list = eqs.filter((e) => e.ativo && e.dia === day).map((e) => ({
-    ...e, servicos: (e.servicos || []).filter((s) => !mine || s.resp?.includes(user.username)),
+    ...e, servicos: (e.servicos || []).map((s) => ({ ...s, resp: respEfetivos(s, users) })).filter((s) => !mine || s.resp.includes(user.username)),
   })).filter((e) => !mine || e.servicos.length)
   return (
     <div className="mx-auto max-w-3xl lg:max-w-none">

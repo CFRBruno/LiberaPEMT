@@ -15,3 +15,12 @@ export const STATUS_CLS = {
 export const SETORES = { manutencao: 'Manutenção', pintura: 'Pintura', lavagem: 'Lavagem' }
 export const tipoUsuario = (u) => (u.role === 'pcm' ? 'PCM' : SETORES[u.setor] || 'Manutenção')
 export const categoria = (u) => (u.role === 'pcm' ? 'Editor' : 'Leitor')
+
+// Atribuição automática: Pintura -> membros do setor Pintura; Lavagem -> membros do setor Lavagem.
+// Soma-se aos responsáveis escolhidos manualmente e vale também para membros cadastrados depois.
+export const SETOR_DO_SERVICO = { Pintura: 'pintura', Lavagem: 'lavagem' }
+export const autoResp = (s, users) => {
+  const setor = SETOR_DO_SERVICO[s.tipo]
+  return setor ? users.filter((u) => u.role !== 'pcm' && u.setor === setor && u.ativo !== false).map((u) => u.username) : []
+}
+export const respEfetivos = (s, users) => [...new Set([...(s.resp || []), ...autoResp(s, users)])]
