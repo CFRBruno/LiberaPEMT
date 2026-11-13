@@ -40,7 +40,7 @@ export default function Evolution() {
     <div className="corners rounded-xl border bg-panel p-3">
       <div className="mb-2 flex flex-wrap items-center gap-3">
         <h2 className="font-semibold">Evolução semanal</h2>
-        <input type="month" value={mes} onChange={(e) => setMes(e.target.value)} className="rounded border p-1 text-sm" />
+        <input type="month" value={mes} onChange={(e) => setMes(e.target.value)} className="rounded-lg border p-1 text-sm" />
         <span className="text-sm text-mute">{base == null ? 'Sem importação neste mês.' : `Base: ${base} indisponíveis na 1ª importação do mês`}</span>
       </div>
       <div className="h-80">

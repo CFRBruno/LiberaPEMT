@@ -10,3 +10,8 @@ export const STATUS_CLS = {
   Manutenção: 'bg-brand/15 text-orange-300 border border-brand/40',
   Inspeção: 'bg-sky-500/15 text-sky-300 border border-sky-500/40',
 }
+
+// Tipo de usuário (setor) e categoria de acesso
+export const SETORES = { manutencao: 'Manutenção', pintura: 'Pintura', lavagem: 'Lavagem' }
+export const tipoUsuario = (u) => (u.role === 'pcm' ? 'PCM' : SETORES[u.setor] || 'Manutenção')
+export const categoria = (u) => (u.role === 'pcm' ? 'Editor' : 'Leitor')

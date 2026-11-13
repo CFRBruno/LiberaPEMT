@@ -22,7 +22,7 @@ export default function History() {
             </button>
             {open === s.id && (
               <table className="mt-1 w-full text-left text-xs">
-                <tbody>{s.itens.map((i) => <tr key={i.tag} className="border-t"><td className="p-0.5 font-medium">{i.tag}</td><td>{i.modelo}</td><td><span className={`rounded px-1 ${STATUS_CLS[i.status] || ''}`}>{i.status}</span></td><td>{i.dias}d</td></tr>)}</tbody>
+                <tbody>{s.itens.map((i) => <tr key={i.tag} className="border-t"><td className="p-0.5 font-medium">{i.tag}</td><td>{i.modelo}</td><td><span className={`rounded-lg px-1 ${STATUS_CLS[i.status] || ''}`}>{i.status}</span></td><td>{i.dias}d</td></tr>)}</tbody>
               </table>
             )}
           </div>

@@ -8,7 +8,7 @@ const write = (c, o) => { localStorage.setItem(K(c), JSON.stringify(o)); emit(c)
 if (!localStorage.getItem(K('users'))) {
   write('users', {
     pcm: { username: 'pcm', nome: 'PCM Demo', role: 'pcm', senha: 'pcm123' },
-    tecnico: { username: 'tecnico', nome: 'Técnico Demo', role: 'tecnico', senha: 'tecnico123' },
+    tecnico: { username: 'tecnico', nome: 'Técnico Demo', role: 'tecnico', setor: 'manutencao', senha: 'tecnico123' },
   })
 }
 let session = (() => { try { return JSON.parse(sessionStorage.getItem('lpemt:session')) } catch { return null } })()
@@ -24,11 +24,11 @@ export const auth = {
     setSession({ uid: u.username, username: u.username, nome: u.nome, role: u.role })
   },
   async signOut() { setSession(null) },
-  async createUser({ username, nome, role, password }) {
+  async createUser({ username, nome, role, setor, password }) {
     const id = username.trim().toLowerCase()
     const u = read('users')
     if (u[id]) throw new Error('Usuário já existe.')
-    u[id] = { username: id, nome, role, senha: password }
+    u[id] = { username: id, nome, role, setor: setor || null, senha: password }
     write('users', u)
   },
 }

@@ -8,6 +8,7 @@ import Evolution from './components/Evolution.jsx'
 import History from './components/History.jsx'
 import Users from './components/Users.jsx'
 import Brand from './components/Brand.jsx'
+import { categoria, tipoUsuario } from './lib/constants.js'
 
 const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['import', 'Importar'], ['chart', 'Evolução'], ['hist', 'Histórico'], ['users', 'Usuários']]
 const TEC_TABS = [['tasks', 'Tarefas do dia'], ['chart', 'Evolução']]
@@ -18,6 +19,23 @@ export default function App() {
   const [tab, setTab] = useState(null)
   useEffect(() => { loadStore().then(setStore) }, [])
   useEffect(() => (store ? store.auth.onChange(setUser) : undefined), [store])
+
+  // Atalho no PC: ← / → alternam entre as abas (ignorado ao digitar ou com janela aberta)
+  useEffect(() => {
+    const onKey = (e) => {
+      if (!user || e.altKey || e.ctrlKey || e.metaKey) return
+      if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return
+      if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName) || document.querySelector('[data-modal]')) return
+      const list = (user.role === 'pcm' ? PCM_TABS : TEC_TABS).map(([k]) => k)
+      setTab((t) => {
+        const i = Math.max(0, list.indexOf(t ?? list[0]))
+        return list[(i + (e.key === 'ArrowRight' ? 1 : -1) + list.length) % list.length]
+      })
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [user])
 
   if (!store || user === undefined) return <p className="p-8 text-mute">Carregando…</p>
   if (!user) return <StoreCtx.Provider value={store}><Login /></StoreCtx.Provider>
@@ -30,7 +48,7 @@ export default function App() {
       <header className="sticky top-0 z-20 border-b border-brand/40 bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1600px] items-center gap-3 px-3 py-2">
           <Brand />
-          <span className="label ml-auto hidden sm:block">{user.nome} · {pcm ? 'PCM' : 'Mão de obra'}</span>
+          <span className="label ml-auto hidden sm:block" title="Use as setas ← → para trocar de aba">{user.nome} · {tipoUsuario(user)} · {categoria(user)}</span>
           <button onClick={() => store.auth.signOut()} className="ml-auto rounded-lg border px-3 py-1.5 text-sm sm:ml-0">Sair</button>
         </div>
         <nav className="mx-auto flex max-w-[1600px] gap-1 overflow-x-auto px-2">

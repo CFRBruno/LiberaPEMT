@@ -42,8 +42,8 @@ body {
 /* cantos "painel técnico" */
 .corners { position: relative; }
 .corners::before, .corners::after { content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid var(--color-brand); pointer-events: none; }
-.corners::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-top-left-radius: 6px; }
-.corners::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; border-bottom-right-radius: 6px; }
+.corners::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; border-top-left-radius: 12px; }
+.corners::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; border-bottom-right-radius: 12px; }
 
 .label { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mute); }
 .tagid { font-family: var(--font-mono); letter-spacing: .02em; }

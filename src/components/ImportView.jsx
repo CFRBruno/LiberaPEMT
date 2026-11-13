@@ -33,24 +33,24 @@ export default function ImportView() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-3">
-      <p className="rounded bg-sky-500/10 p-2 text-sm text-sky-200">Cada importação grava um <b>retrato datado</b> e atualiza o estado atual por TAG. Nada é apagado: equipamentos que não vieram na lista são marcados como <b>liberados</b> na data informada, e serviços/dias já programados são mantidos.</p>
+      <p className="rounded-lg bg-sky-500/10 p-2 text-sm text-sky-200">Cada importação grava um <b>retrato datado</b> e atualiza o estado atual por TAG. Nada é apagado: equipamentos que não vieram na lista são marcados como <b>liberados</b> na data informada, e serviços/dias já programados são mantidos.</p>
       <div className="rounded-xl bg-panel p-3 shadow">
         <label className="text-sm font-medium">Arquivo (Excel .xls/.xlsx ou texto .txt/.csv)
           <input type="file" accept=".xls,.xlsx,.txt,.csv,.tsv" onChange={(e) => e.target.files[0] && run(() => parseFile(e.target.files[0]))} className="mt-1 block w-full text-sm" />
         </label>
         <p className="my-2 text-center text-xs text-mute">ou cole o texto copiado do sistema</p>
-        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={5} placeholder="Patrimônio⇥Equipamento⇥Status⇥…" className="w-full rounded border p-2 font-mono text-xs" />
-        <button disabled={!text.trim()} onClick={() => run(() => parseText(text))} className="mt-1 rounded bg-brand px-3 py-1 text-white disabled:opacity-40">Ler texto</button>
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={5} placeholder="Patrimônio⇥Equipamento⇥Status⇥…" className="w-full rounded-lg border p-2 font-mono text-xs" />
+        <button disabled={!text.trim()} onClick={() => run(() => parseText(text))} className="mt-1 rounded-lg bg-brand px-3 py-1 text-white disabled:opacity-40">Ler texto</button>
       </div>
-      {err && <p className="rounded bg-red-500/15 p-2 text-red-300">{err}</p>}
-      {msg && <p className="rounded bg-green-500/15 p-2 text-green-300">{msg}</p>}
+      {err && <p className="rounded-lg bg-red-500/15 p-2 text-red-300">{err}</p>}
+      {msg && <p className="rounded-lg bg-green-500/15 p-2 text-green-300">{msg}</p>}
       {rows && (
         <div className="rounded-xl bg-panel p-3 shadow">
           <div className="flex flex-wrap items-center gap-3">
             <b>{rows.length} equipamentos lidos</b>
             <span className="text-green-400">+{novos.length} novos/retornaram</span>
             <span className="text-orange-300">{sairam.length} saíram da lista (liberados)</span>
-            <label className="ml-auto text-sm">Data da importação <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="rounded border p-1" /></label>
+            <label className="ml-auto text-sm">Data da importação <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="rounded-lg border p-1" /></label>
           </div>
           {sairam.length > 0 && <p className="mt-1 text-xs text-orange-300">Liberados: {sairam.map((e) => e.id).join(', ')}</p>}
           <div className="mt-2 max-h-72 overflow-auto">
@@ -62,8 +62,8 @@ export default function ImportView() {
             </table>
           </div>
           <div className="mt-3 flex justify-end gap-2">
-            <button onClick={() => setRows(null)} className="rounded border px-3 py-1">Cancelar</button>
-            <button onClick={confirm} className="rounded bg-brand px-4 py-1 font-medium text-white">Confirmar importação</button>
+            <button onClick={() => setRows(null)} className="rounded-lg border px-3 py-1">Cancelar</button>
+            <button onClick={confirm} className="rounded-lg bg-brand px-4 py-1 font-medium text-white">Confirmar importação</button>
           </div>
         </div>
       )}

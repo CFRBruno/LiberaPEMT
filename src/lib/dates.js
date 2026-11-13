@@ -10,3 +10,5 @@ export const fmtShort = (s) => `${s.slice(8, 10)}/${s.slice(5, 7)}`
 export const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 export const dow = (s) => DIAS[parseISO(s).getDay()]
 export const nowStamp = () => { const d = new Date(); return `${iso(d)}T${p(d.getHours())}:${p(d.getMinutes())}` }
+// Sáb/Dom -> próxima segunda (a semana de trabalho é Seg–Sex)
+export const proxDiaUtil = (s) => { const k = parseISO(s).getDay(); return k === 6 ? addDays(s, 2) : k === 0 ? addDays(s, 1) : s }
