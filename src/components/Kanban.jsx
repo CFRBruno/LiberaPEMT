@@ -36,13 +36,23 @@ export default function Kanban({ user }) {
   )
   // Em PC: 6 colunas na tela, cada uma com rolagem vertical própria.
   // Em celular/tablet: colunas em carrossel horizontal com "snap", abrindo no dia atual.
-  const column = ({ title, sub, k, items, today }) => (
+  const column = ({ title, sub, k, items, today }) => {
+    const alerta = k === 'sem' && items.length > 0
+    return (
     <section key={k} data-col={k} onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, k === 'sem' ? null : k)}
-      className={`corners flex w-[84vw] max-w-sm shrink-0 snap-start flex-col rounded-xl border p-2 lg:h-full lg:min-h-0 lg:w-auto lg:max-w-none lg:min-w-0 ${today ? 'bg-brand/10 ring-2 ring-brand/60' : 'bg-black/25'}`}>
-      <h3 className="label mb-2 flex shrink-0 justify-between !text-ink">{title}<span className="font-normal text-mute">{sub} · {items.length}</span></h3>
+      className={`corners flex w-[84vw] max-w-sm shrink-0 snap-start flex-col rounded-xl border p-2 lg:h-full lg:min-h-0 lg:w-auto lg:max-w-none lg:min-w-0 ${k === 'sem' ? `sem-col ${alerta ? 'border-dashed border-red-400/60 bg-red-500/5' : 'border-dashed bg-black/25'}` : today ? 'bg-brand/10 ring-2 ring-brand/60' : 'bg-black/25'}`}>
+      {k === 'sem' && <i className="sem-divider" />}
+      <h3 className="label mb-2 flex shrink-0 items-center justify-between gap-2 !text-ink">
+        <span className="flex items-center gap-1.5">{k === 'sem' && <span className={alerta ? 'text-red-400' : 'text-green-400'}>{alerta ? '⚠' : '✓'}</span>}{title}</span>
+        {k === 'sem'
+          ? <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${alerta ? 'alert-pulse bg-red-500 text-white' : 'bg-green-500/15 text-green-300'}`}>{alerta ? items.length : 'ok'}</span>
+          : <span className="font-normal text-mute">{sub} · {items.length}</span>}
+      </h3>
+      {k === 'sem' && <p className={`-mt-1 mb-2 text-[11px] ${alerta ? 'text-red-300' : 'text-mute'}`}>{alerta ? 'Equipamentos sem dia definido' : 'Tudo programado'}</p>}
       <div className="min-h-0 flex-1 space-y-2 lg:overflow-y-auto lg:pr-0.5">{[...items].sort((a, b) => isLiberado(a) - isLiberado(b)).map(card)}</div>
     </section>
-  )
+    )
+  }
   const cols = [{ k: 'sem', title: 'Sem previsão', items: semData }, ...days.map((d) => ({ k: d, title: dow(d), sub: fmtShort(d), items: ativos.filter((e) => e.dia === d), today: d === todayISO() }))]
 
   const strip = useRef(null)
@@ -78,12 +88,12 @@ export default function Kanban({ user }) {
       {/* atalhos de dia (só celular/tablet) */}
       <div className="mb-2 flex gap-1 overflow-x-auto lg:hidden">
         {cols.map((c) => (
-          <button key={c.k} onClick={() => goTo(c.k)} className={`shrink-0 rounded-lg border px-3 py-1.5 text-sm ${ativa === c.k ? 'border-brand bg-brand/15 text-brand' : 'bg-panel text-mute'}`}>
-            {c.k === 'sem' ? 'Sem prev.' : c.title} <span className="text-xs opacity-70">{c.items.length}</span>
+          <button key={c.k} onClick={() => goTo(c.k)} className={`shrink-0 rounded-lg border px-3 py-1.5 text-sm ${c.k === 'sem' ? 'mr-2 border-dashed' : ''} ${ativa === c.k ? 'border-brand bg-brand/15 text-brand' : 'bg-panel text-mute'}`}>
+            {c.k === 'sem' && c.items.length > 0 && <span className="alert-pulse mr-1 inline-block h-2 w-2 rounded-full bg-red-500" />}{c.k === 'sem' ? 'Sem prev.' : c.title} <span className="text-xs opacity-70">{c.items.length}</span>
           </button>
         ))}
       </div>
-      <div ref={strip} onScroll={onScroll} className="stagger -mx-3 flex items-start snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 lg:mx-0 lg:grid lg:items-stretch lg:h-[calc(100dvh-15rem)] lg:min-h-[26rem] lg:grid-cols-6 lg:grid-rows-1 lg:overflow-visible lg:px-0 lg:pb-0">
+      <div ref={strip} onScroll={onScroll} className="stagger -mx-3 flex items-start snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 lg:mx-0 lg:grid lg:items-stretch lg:h-[calc(100dvh-15rem)] lg:min-h-[26rem] lg:grid-cols-[1.1fr_repeat(5,minmax(0,1fr))] lg:grid-rows-1 lg:overflow-visible lg:px-0 lg:pb-0">
         {cols.map(column)}
       </div>
       {open && <EquipModal eq={eqs.find((e) => e.id === open)} users={users} onClose={() => setOpen(null)} weekStartISO={ws} />}

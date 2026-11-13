@@ -73,3 +73,14 @@ body {
 .navtab.on::after { transform: scaleX(1); }
 
 @media (prefers-reduced-motion: reduce) { .tab-enter, .stagger > * { animation: none !important; } .navtab::after { transition: none; } }
+
+/* Coluna "Sem previsão": afastada da semana, com divisória tracejada e alerta pulsante */
+@keyframes alertPulse { 0%, 100% { box-shadow: 0 0 0 0 rgb(248 113 113 / .6); } 50% { box-shadow: 0 0 0 7px rgb(248 113 113 / 0); } }
+.alert-pulse { animation: alertPulse 1.8s ease-out infinite; }
+@media (min-width: 1024px) {
+  .sem-col { margin-right: 1.1rem; }
+  .sem-divider { display: block !important; position: absolute; top: 6px; bottom: 6px; right: -1.1rem; border-right: 2px dashed rgb(248 113 113 / .35); pointer-events: none; }
+}
+@media (prefers-reduced-motion: reduce) { .alert-pulse { animation: none; } }
+
+.sem-divider { display: none; }
