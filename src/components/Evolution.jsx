@@ -4,7 +4,7 @@ import { useCol } from '../lib/store.js'
 import { dataLiberacao } from '../lib/liberado.js'
 import { addDays, fmtShort, todayISO, weekStart } from '../lib/dates.js'
 
-const TIPOS = [['Liberação', '#2563eb'], ['Pintura', '#7c3aed'], ['Lavagem', '#0d9488']]
+const TIPOS = [['Liberação', '#ef8024'], ['Pintura', '#22d3ee'], ['Lavagem', '#a78bfa']]
 
 // Semanas do mês (seg–dom). Base = nº de indisponíveis na 1ª importação do mês.
 export default function Evolution() {
@@ -37,11 +37,11 @@ export default function Evolution() {
   }, [eqs, snaps, mes])
 
   return (
-    <div className="rounded-xl bg-white p-3 shadow">
+    <div className="corners rounded-xl border bg-panel p-3">
       <div className="mb-2 flex flex-wrap items-center gap-3">
         <h2 className="font-semibold">Evolução semanal</h2>
         <input type="month" value={mes} onChange={(e) => setMes(e.target.value)} className="rounded border p-1 text-sm" />
-        <span className="text-sm text-slate-500">{base == null ? 'Sem importação neste mês.' : `Base: ${base} indisponíveis na 1ª importação do mês`}</span>
+        <span className="text-sm text-mute">{base == null ? 'Sem importação neste mês.' : `Base: ${base} indisponíveis na 1ª importação do mês`}</span>
       </div>
       <div className="h-80">
         <ResponsiveContainer>
@@ -52,11 +52,11 @@ export default function Evolution() {
             <Tooltip /><Legend />
             {base != null && <ReferenceLine y={base} stroke="#94a3b8" strokeDasharray="6 4" label={{ value: 'base', fontSize: 11 }} />}
             {TIPOS.map(([t, c]) => <Bar key={t} dataKey={t} name={`${t} (realizadas)`} fill={c} />)}
-            <Line dataKey="restantes" name="Indisponíveis (fim da semana)" stroke="#0f172a" strokeWidth={2} connectNulls />
+            <Line dataKey="restantes" name="Indisponíveis (fim da semana)" stroke="#e8edf5" strokeWidth={2} connectNulls />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-2 text-xs text-slate-500">Barras: serviços marcados como “Realizado” na semana (pela data de realização). Linha: indisponíveis ao fim da semana (última importação, descontados os equipamentos com Liberação realizada).</p>
+      <p className="mt-2 text-xs text-mute">Barras: serviços marcados como “Realizado” na semana (pela data de realização). Linha: indisponíveis ao fim da semana (última importação, descontados os equipamentos com Liberação realizada).</p>
     </div>
   )
 }

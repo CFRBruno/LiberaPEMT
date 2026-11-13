@@ -1,12 +1,12 @@
 export const SERVICOS = ['Pintura', 'Serralheria', 'Aguardando peças', 'Liberação', 'Preventiva', 'Lavagem']
 export const RESULTADOS = {
-  pendente: { label: 'Pendente', cls: 'bg-slate-200 text-slate-700 border-slate-300', dot: 'bg-slate-400' },
-  realizado: { label: 'Realizado', cls: 'bg-green-100 text-green-800 border-green-400', dot: 'bg-green-500' },
-  adiado: { label: 'Adiado', cls: 'bg-yellow-100 text-yellow-800 border-yellow-400', dot: 'bg-yellow-400' },
-  fora_prazo: { label: 'Fora do prazo', cls: 'bg-orange-100 text-orange-800 border-orange-400', dot: 'bg-orange-500' },
-  nao_realizado: { label: 'Não realizado', cls: 'bg-red-100 text-red-800 border-red-400', dot: 'bg-red-500' },
+  pendente: { label: 'Pendente', cls: 'bg-slate-500/15 text-slate-300 border-slate-500/50', dot: 'bg-slate-400' },
+  realizado: { label: 'Realizado', cls: 'bg-green-500/15 text-green-300 border-green-500/60', dot: 'bg-green-500' },
+  adiado: { label: 'Adiado', cls: 'bg-yellow-400/15 text-yellow-300 border-yellow-400/60', dot: 'bg-yellow-400' },
+  fora_prazo: { label: 'Fora do prazo', cls: 'bg-orange-500/15 text-orange-300 border-orange-500/60', dot: 'bg-orange-500' },
+  nao_realizado: { label: 'Não realizado', cls: 'bg-red-500/15 text-red-300 border-red-500/60', dot: 'bg-red-500' },
 }
 export const STATUS_CLS = {
-  Manutenção: 'bg-amber-100 text-amber-900',
-  Inspeção: 'bg-sky-100 text-sky-900',
+  Manutenção: 'bg-brand/15 text-orange-300 border border-brand/40',
+  Inspeção: 'bg-sky-500/15 text-sky-300 border border-sky-500/40',
 }

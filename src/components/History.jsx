@@ -11,13 +11,13 @@ export default function History() {
   const liberados = eqs.map((e) => ({ ...e, quando: dataLiberacao(e) || e.liberadoEm })).filter((e) => e.quando).sort((a, b) => b.quando.localeCompare(a.quando))
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      <section className="rounded-xl bg-white p-3 shadow">
+      <section className="rounded-xl bg-panel p-3 shadow">
         <h2 className="mb-2 font-semibold">Importações anteriores</h2>
-        {!snaps.length && <p className="text-sm text-slate-500">Nenhuma importação ainda.</p>}
+        {!snaps.length && <p className="text-sm text-mute">Nenhuma importação ainda.</p>}
         {snaps.map((s) => (
           <div key={s.id} className="border-t py-1">
             <button onClick={() => setOpen(open === s.id ? null : s.id)} className="flex w-full justify-between text-left text-sm">
-              <b>{fmtBR(s.data)} <span className="font-normal text-slate-400">{s.stamp.slice(11)}</span></b>
+              <b>{fmtBR(s.data)} <span className="font-normal text-mute">{s.stamp.slice(11)}</span></b>
               <span>{s.total} equip. · +{s.novos?.length || 0} · −{s.liberados?.length || 0}</span>
             </button>
             {open === s.id && (
@@ -28,11 +28,11 @@ export default function History() {
           </div>
         ))}
       </section>
-      <section className="rounded-xl bg-white p-3 shadow">
+      <section className="rounded-xl bg-panel p-3 shadow">
         <h2 className="mb-2 font-semibold">Equipamentos liberados</h2>
-        {!liberados.length && <p className="text-sm text-slate-500">Nenhum ainda.</p>}
+        {!liberados.length && <p className="text-sm text-mute">Nenhum ainda.</p>}
         {liberados.map((e) => (
-          <div key={e.id} className="flex justify-between border-t py-1 text-sm"><span><b>{e.tag}</b> <span className="text-slate-500">{e.modelo}</span></span><span>{fmtBR(e.quando)}</span></div>
+          <div key={e.id} className="flex justify-between border-t py-1 text-sm"><span><b>{e.tag}</b> <span className="text-mute">{e.modelo}</span></span><span>{fmtBR(e.quando)}</span></div>
         ))}
       </section>
     </div>

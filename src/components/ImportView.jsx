@@ -33,29 +33,29 @@ export default function ImportView() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-3">
-      <p className="rounded bg-blue-50 p-2 text-sm text-blue-900">Cada importação grava um <b>retrato datado</b> e atualiza o estado atual por TAG. Nada é apagado: equipamentos que não vieram na lista são marcados como <b>liberados</b> na data informada, e serviços/dias já programados são mantidos.</p>
-      <div className="rounded-xl bg-white p-3 shadow">
+      <p className="rounded bg-sky-500/10 p-2 text-sm text-sky-200">Cada importação grava um <b>retrato datado</b> e atualiza o estado atual por TAG. Nada é apagado: equipamentos que não vieram na lista são marcados como <b>liberados</b> na data informada, e serviços/dias já programados são mantidos.</p>
+      <div className="rounded-xl bg-panel p-3 shadow">
         <label className="text-sm font-medium">Arquivo (Excel .xls/.xlsx ou texto .txt/.csv)
           <input type="file" accept=".xls,.xlsx,.txt,.csv,.tsv" onChange={(e) => e.target.files[0] && run(() => parseFile(e.target.files[0]))} className="mt-1 block w-full text-sm" />
         </label>
-        <p className="my-2 text-center text-xs text-slate-400">ou cole o texto copiado do sistema</p>
+        <p className="my-2 text-center text-xs text-mute">ou cole o texto copiado do sistema</p>
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={5} placeholder="Patrimônio⇥Equipamento⇥Status⇥…" className="w-full rounded border p-2 font-mono text-xs" />
-        <button disabled={!text.trim()} onClick={() => run(() => parseText(text))} className="mt-1 rounded bg-slate-800 px-3 py-1 text-white disabled:opacity-40">Ler texto</button>
+        <button disabled={!text.trim()} onClick={() => run(() => parseText(text))} className="mt-1 rounded bg-brand px-3 py-1 text-white disabled:opacity-40">Ler texto</button>
       </div>
-      {err && <p className="rounded bg-red-100 p-2 text-red-800">{err}</p>}
-      {msg && <p className="rounded bg-green-100 p-2 text-green-800">{msg}</p>}
+      {err && <p className="rounded bg-red-500/15 p-2 text-red-300">{err}</p>}
+      {msg && <p className="rounded bg-green-500/15 p-2 text-green-300">{msg}</p>}
       {rows && (
-        <div className="rounded-xl bg-white p-3 shadow">
+        <div className="rounded-xl bg-panel p-3 shadow">
           <div className="flex flex-wrap items-center gap-3">
             <b>{rows.length} equipamentos lidos</b>
-            <span className="text-green-700">+{novos.length} novos/retornaram</span>
-            <span className="text-orange-700">{sairam.length} saíram da lista (liberados)</span>
+            <span className="text-green-400">+{novos.length} novos/retornaram</span>
+            <span className="text-orange-300">{sairam.length} saíram da lista (liberados)</span>
             <label className="ml-auto text-sm">Data da importação <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="rounded border p-1" /></label>
           </div>
-          {sairam.length > 0 && <p className="mt-1 text-xs text-orange-800">Liberados: {sairam.map((e) => e.id).join(', ')}</p>}
+          {sairam.length > 0 && <p className="mt-1 text-xs text-orange-300">Liberados: {sairam.map((e) => e.id).join(', ')}</p>}
           <div className="mt-2 max-h-72 overflow-auto">
             <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 bg-slate-100"><tr><th className="p-1">TAG</th><th>Modelo</th><th>Status</th><th>Dias</th><th>Últ. mod.</th><th></th></tr></thead>
+              <thead className="sticky top-0 bg-panel2"><tr><th className="p-1">TAG</th><th>Modelo</th><th>Status</th><th>Dias</th><th>Últ. mod.</th><th></th></tr></thead>
               <tbody>{rows.map((r) => (
                 <tr key={r.tag} className="border-t"><td className="p-1 font-medium">{r.tag}</td><td>{r.modelo}</td><td>{r.status}</td><td>{r.dias}</td><td>{fmtBR(r.ultMov)}</td><td>{novos.includes(r) ? '🆕' : ''}</td></tr>
               ))}</tbody>
@@ -63,7 +63,7 @@ export default function ImportView() {
           </div>
           <div className="mt-3 flex justify-end gap-2">
             <button onClick={() => setRows(null)} className="rounded border px-3 py-1">Cancelar</button>
-            <button onClick={confirm} className="rounded bg-green-600 px-4 py-1 font-medium text-white">Confirmar importação</button>
+            <button onClick={confirm} className="rounded bg-brand px-4 py-1 font-medium text-white">Confirmar importação</button>
           </div>
         </div>
       )}
