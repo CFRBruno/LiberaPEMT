@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Bar, CartesianGrid, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useCol } from '../lib/store.js'
 import { dataLiberacao } from '../lib/liberado.js'
+import { useFrota } from '../lib/frota.js'
 import { addDays, fmtShort, todayISO, weekStart } from '../lib/dates.js'
 
 const TIPOS = [['Liberação', '#ef8024'], ['Pintura', '#22d3ee'], ['Lavagem', '#a78bfa']]
@@ -10,6 +11,7 @@ const TIPOS = [['Liberação', '#ef8024'], ['Pintura', '#22d3ee'], ['Lavagem', '
 export default function Evolution() {
   const eqs = useCol('equipamentos')
   const snaps = useCol('snapshots')
+  const { frotaEm, meta } = useFrota()
   const [mes, setMes] = useState(todayISO().slice(0, 7))
 
   const { data, base } = useMemo(() => {
@@ -31,10 +33,12 @@ export default function Evolution() {
       const porTag = Object.fromEntries(eqs.map((e) => [e.id, e]))
       // Indisponíveis = lista da última importação, menos os que já tiveram Liberação realizada até o fim da semana
       row.restantes = w > todayISO() || !ref ? null : ref.itens.filter((i) => { const d = dataLiberacao(porTag[i.tag]); return !(d && d <= we) }).length
+      const f = frotaEm(we > todayISO() ? todayISO() : we)
+      row.taxa = row.restantes != null && f ? +((row.restantes / f) * 100).toFixed(1) : null
       rows.push(row)
     }
     return { data: rows, base }
-  }, [eqs, snaps, mes])
+  }, [eqs, snaps, mes, frotaEm])
 
   return (
     <div className="corners rounded-xl border bg-panel p-3">
@@ -48,11 +52,14 @@ export default function Evolution() {
           <ComposedChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="semana" fontSize={12} />
-            <YAxis allowDecimals={false} fontSize={12} />
+            <YAxis yAxisId="l" allowDecimals={false} fontSize={12} />
+            <YAxis yAxisId="r" orientation="right" unit="%" domain={[0, (m) => Math.max(Math.ceil(m), meta * 2)]} fontSize={12} />
             <Tooltip /><Legend />
-            {base != null && <ReferenceLine y={base} stroke="#94a3b8" strokeDasharray="6 4" label={{ value: 'base', fontSize: 11 }} />}
-            {TIPOS.map(([t, c]) => <Bar key={t} dataKey={t} name={`${t} (realizadas)`} fill={c} />)}
-            <Line dataKey="restantes" name="Indisponíveis (fim da semana)" stroke="#e8edf5" strokeWidth={2} connectNulls />
+            <ReferenceLine yAxisId="r" y={meta} stroke="#f87171" strokeDasharray="4 4" label={{ value: `meta ${meta}%`, fontSize: 11, fill: '#f87171', position: 'insideTopRight' }} />
+            {base != null && <ReferenceLine yAxisId="l" y={base} stroke="#94a3b8" strokeDasharray="6 4" label={{ value: 'base', fontSize: 11 }} />}
+            {TIPOS.map(([t, c]) => <Bar yAxisId="l" key={t} dataKey={t} name={`${t} (realizadas)`} fill={c} />)}
+            <Line yAxisId="r" dataKey="taxa" name="Taxa de indisponibilidade (%)" stroke="#f87171" strokeWidth={2} strokeDasharray="5 3" connectNulls />
+            <Line yAxisId="l" dataKey="restantes" name="Indisponíveis (fim da semana)" stroke="#e8edf5" strokeWidth={2} connectNulls />
           </ComposedChart>
         </ResponsiveContainer>
       </div>

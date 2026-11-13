@@ -18,6 +18,7 @@ npm run dev      # sem .env = MODO DEMONSTRAÇÃO (pcm/pcm123 e tecnico/tecnico1
 - **PCM** (categoria Editor): importa (Excel ou texto colado — mesmo resultado), arrasta equipamentos para os dias, define serviços/responsáveis, marca resultado (Realizado/Adiado/Fora do prazo/Não realizado), data de realização e observações.
 - **Manutenção, Pintura e Lavagem** (tipos de usuário, categoria Leitor): só leitura das tarefas do dia (atualiza em tempo real), com filtro "só as minhas".
 - **Importações** nunca substituem: cada uma grava um retrato datado (`snapshots`) e atualiza por TAG; quem sai da lista vira "liberado" com data. Serviços e dias já programados são preservados.
+- **Taxa de indisponibilidade** = indisponíveis ÷ frota total (meta 5%, editável). Aparece no topo para todos; o PCM atualiza a frota na aba **Frota** (com histórico).
 - **Evolução**: serviços realizados por semana (Liberação, Pintura, Lavagem) e indisponíveis restantes, tendo como base a 1ª importação do mês.
 
 Exemplos de importação em `exemplos/`.
