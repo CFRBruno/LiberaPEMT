@@ -62,7 +62,7 @@ export default function App() {
         {store.demo && <div className="bg-brand/90 px-3 py-1 text-center text-xs font-medium text-black">Modo demonstração: dados salvos só neste navegador. Configure o Firebase (.env) para uso real.</div>}
       </header>
       <main key={cur} className="tab-enter mx-auto max-w-[1600px] p-3">
-        {cur === 'plan' && <Kanban user={user} />}
+        {cur === 'plan' && <Kanban user={user} onFrota={() => setTab('frota')} />}
         {cur === 'tasks' && <Tasks user={user} />}
         {cur === 'import' && <ImportView />}
         {cur === 'chart' && <Evolution />}

@@ -2,12 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCol, useStore } from '../lib/store.js'
 import { addDays, addMes, dow, fmtShort, MESES, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
 import Mensal from './Mensal.jsx'
+import TaxaBanner from './TaxaBanner.jsx'
 import { STATUS_CLS } from '../lib/constants.js'
 import { ServiceChip } from './ServiceChips.jsx'
 import { isLiberado } from '../lib/liberado.js'
 import EquipModal from './EquipModal.jsx'
 
-export default function Kanban({ user }) {
+export default function Kanban({ user, onFrota }) {
   const store = useStore()
   const eqs = useCol('equipamentos')
   const users = useCol('users')
@@ -80,6 +81,7 @@ export default function Kanban({ user }) {
   const seg = (m, l) => <button onClick={() => setModo(m)} className={`px-3 py-1 text-sm ${modo === m ? 'bg-brand' : 'text-mute'}`}>{l}</button>
   return (
     <div>
+      <TaxaBanner onFrota={onFrota} />
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <div className="flex overflow-hidden rounded-lg border">{seg('semana', 'Semana')}{seg('mes', 'Mês')}</div>
         {modo === 'semana' ? (<>
@@ -108,7 +110,7 @@ export default function Kanban({ user }) {
           </button>
         ))}
       </div>
-      <div ref={strip} onScroll={onScroll} className="stagger -mx-3 flex items-start snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 lg:mx-0 lg:grid lg:items-stretch lg:h-[calc(100dvh-15rem)] lg:min-h-[26rem] lg:grid-cols-[1.1fr_repeat(5,minmax(0,1fr))] lg:grid-rows-1 lg:overflow-visible lg:px-0 lg:pb-0">
+      <div ref={strip} onScroll={onScroll} className="stagger -mx-3 flex items-start snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 lg:mx-0 lg:grid lg:items-stretch lg:h-[calc(100dvh-20rem)] lg:min-h-[26rem] lg:grid-cols-[1.1fr_repeat(5,minmax(0,1fr))] lg:grid-rows-1 lg:overflow-visible lg:px-0 lg:pb-0">
         {cols.map(column)}
       </div>
       </>)}
