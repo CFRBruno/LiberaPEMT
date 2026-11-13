@@ -3,6 +3,7 @@ import { useCol } from '../lib/store.js'
 import { addDays, dow, fmtBR, fmtShort, todayISO, weekStart } from '../lib/dates.js'
 import { STATUS_CLS } from '../lib/constants.js'
 import { StatusPill } from './ServiceChips.jsx'
+import { isLiberado } from '../lib/liberado.js'
 
 // Visão da mão de obra (somente leitura, atualiza em tempo real).
 export default function Tasks({ user }) {
@@ -32,8 +33,8 @@ export default function Tasks({ user }) {
       {list.length === 0 && <p className="rounded bg-white p-4 text-slate-500">Nada programado para este dia.</p>}
       <div className="space-y-3">
         {list.map((e) => (
-          <article key={e.id} className="rounded-xl bg-white p-3 shadow">
-            <div className="flex items-center justify-between"><b className="text-lg">{e.tag}</b>
+          <article key={e.id} className={`rounded-xl p-3 shadow ${isLiberado(e) ? 'bg-green-50 ring-1 ring-green-500' : 'bg-white'}`}>
+            <div className="flex items-center justify-between"><b className="text-lg">{e.tag}{isLiberado(e) && <span className="ml-2 text-sm text-green-700">✔ Liberado</span>}</b>
               <span className={`rounded px-2 text-xs ${STATUS_CLS[e.status] || 'bg-slate-100'}`}>{e.status}</span></div>
             <p className="text-sm text-slate-600">{e.modelo} · {e.dias ?? '?'} dias no status</p>
             {e.obs && <p className="mt-1 rounded bg-slate-50 p-1 text-sm">📝 {e.obs}</p>}

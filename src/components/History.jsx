@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { useCol } from '../lib/store.js'
 import { fmtBR } from '../lib/dates.js'
 import { STATUS_CLS } from '../lib/constants.js'
+import { dataLiberacao } from '../lib/liberado.js'
 
 export default function History() {
   const snaps = useCol('snapshots').sort((a, b) => b.stamp.localeCompare(a.stamp))
   const eqs = useCol('equipamentos')
   const [open, setOpen] = useState(null)
-  const liberados = eqs.filter((e) => !e.ativo && e.liberadoEm).sort((a, b) => b.liberadoEm.localeCompare(a.liberadoEm))
+  const liberados = eqs.map((e) => ({ ...e, quando: dataLiberacao(e) || e.liberadoEm })).filter((e) => e.quando).sort((a, b) => b.quando.localeCompare(a.quando))
   return (
     <div className="grid gap-3 md:grid-cols-2">
       <section className="rounded-xl bg-white p-3 shadow">
@@ -31,7 +32,7 @@ export default function History() {
         <h2 className="mb-2 font-semibold">Equipamentos liberados</h2>
         {!liberados.length && <p className="text-sm text-slate-500">Nenhum ainda.</p>}
         {liberados.map((e) => (
-          <div key={e.id} className="flex justify-between border-t py-1 text-sm"><span><b>{e.tag}</b> <span className="text-slate-500">{e.modelo}</span></span><span>{fmtBR(e.liberadoEm)}</span></div>
+          <div key={e.id} className="flex justify-between border-t py-1 text-sm"><span><b>{e.tag}</b> <span className="text-slate-500">{e.modelo}</span></span><span>{fmtBR(e.quando)}</span></div>
         ))}
       </section>
     </div>

@@ -3,6 +3,7 @@ import { useCol, useStore } from '../lib/store.js'
 import { addDays, dow, fmtShort, todayISO, weekStart } from '../lib/dates.js'
 import { STATUS_CLS } from '../lib/constants.js'
 import { ServiceChip } from './ServiceChips.jsx'
+import { isLiberado } from '../lib/liberado.js'
 import EquipModal from './EquipModal.jsx'
 
 export default function Kanban({ user }) {
@@ -22,22 +23,22 @@ export default function Kanban({ user }) {
 
   const Card = ({ e }) => (
     <div draggable onDragStart={(ev) => ev.dataTransfer.setData('text/plain', e.id)} onClick={() => setOpen(e.id)}
-      className="cursor-pointer rounded-lg border bg-white p-2 shadow-sm hover:border-slate-400">
+      className={`cursor-pointer rounded-lg border p-2 shadow-sm hover:border-slate-400 ${isLiberado(e) ? 'border-green-500 bg-green-50' : 'bg-white'}`}>
       <div className="flex items-center justify-between gap-1">
-        <b className="text-sm">{e.tag}</b>
+        <b className="text-sm">{e.tag}{isLiberado(e) && <span className="ml-1 text-green-700">✔ Liberado</span>}</b>
         <span className={`rounded px-1.5 text-[10px] ${STATUS_CLS[e.status] || 'bg-slate-100'}`}>{e.status}</span>
       </div>
       <div className="truncate text-xs text-slate-600">{e.modelo}</div>
       <div className="mt-0.5 text-[11px] text-slate-400">{e.dias ?? '?'} dias no status</div>
       {!!e.servicos?.length && <div className="mt-1 flex flex-wrap gap-1">{e.servicos.map((s) => <ServiceChip key={s.id} s={s} />)}</div>}
-      {e.status === 'Manutenção' && !e.servicos?.length && <div className="mt-1 text-[11px] text-red-500">⚠ sem serviços definidos</div>}
+      {e.status === 'Manutenção' && !isLiberado(e) && !e.servicos?.length && <div className="mt-1 text-[11px] text-red-500">⚠ sem serviços definidos</div>}
     </div>
   )
   const Column = ({ title, sub, k, items, today }) => (
     <section onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, k === 'sem' ? null : k)}
       className={`w-64 shrink-0 rounded-xl p-2 ${today ? 'bg-amber-50 ring-2 ring-amber-300' : 'bg-slate-200/70'}`}>
       <h3 className="mb-2 flex justify-between text-sm font-semibold">{title}<span className="font-normal text-slate-500">{sub} · {items.length}</span></h3>
-      <div className="space-y-2">{items.map((e) => <Card key={e.id} e={e} />)}</div>
+      <div className="space-y-2">{[...items].sort((a, b) => isLiberado(a) - isLiberado(b)).map((e) => <Card key={e.id} e={e} />)}</div>
     </section>
   )
 

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Bar, CartesianGrid, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useCol } from '../lib/store.js'
+import { dataLiberacao } from '../lib/liberado.js'
 import { addDays, fmtShort, todayISO, weekStart } from '../lib/dates.js'
 
 const TIPOS = [['Liberação', '#2563eb'], ['Pintura', '#7c3aed'], ['Lavagem', '#0d9488']]
@@ -26,7 +27,10 @@ export default function Evolution() {
         row[t] = eqs.reduce((n, e) => n + (e.servicos || []).filter((s) => s.tipo === t && s.resultado === 'realizado' && s.dataRealizacao >= w && s.dataRealizacao <= we).length, 0)
       })
       const ate = doMes.filter((s) => s.data <= we)
-      row.restantes = w > todayISO() ? null : (ate.length ? ate[ate.length - 1].total : base)
+      const ref = ate.length ? ate[ate.length - 1] : doMes[0]
+      const porTag = Object.fromEntries(eqs.map((e) => [e.id, e]))
+      // Indisponíveis = lista da última importação, menos os que já tiveram Liberação realizada até o fim da semana
+      row.restantes = w > todayISO() || !ref ? null : ref.itens.filter((i) => { const d = dataLiberacao(porTag[i.tag]); return !(d && d <= we) }).length
       rows.push(row)
     }
     return { data: rows, base }
@@ -52,7 +56,7 @@ export default function Evolution() {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-2 text-xs text-slate-500">Barras: serviços marcados como “Realizado” na semana (pela data de realização). Linha: total de indisponíveis segundo a última importação de cada semana.</p>
+      <p className="mt-2 text-xs text-slate-500">Barras: serviços marcados como “Realizado” na semana (pela data de realização). Linha: indisponíveis ao fim da semana (última importação, descontados os equipamentos com Liberação realizada).</p>
     </div>
   )
 }
