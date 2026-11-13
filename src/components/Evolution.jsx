@@ -43,7 +43,7 @@ export default function Evolution() {
         <input type="month" value={mes} onChange={(e) => setMes(e.target.value)} className="rounded-lg border p-1 text-sm" />
         <span className="text-sm text-mute">{base == null ? 'Sem importação neste mês.' : `Base: ${base} indisponíveis na 1ª importação do mês`}</span>
       </div>
-      <div className="h-80">
+      <div className="h-64 sm:h-80 xl:h-[26rem]">
         <ResponsiveContainer>
           <ComposedChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />

@@ -18,11 +18,11 @@ export default function Tasks({ user }) {
     ...e, servicos: (e.servicos || []).filter((s) => !mine || s.resp?.includes(user.username)),
   })).filter((e) => !mine || e.servicos.length)
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl lg:max-w-none">
       <div className="mb-2 flex items-center gap-1 overflow-x-auto">
         <button onClick={() => setDay(addDays(day, -7))} className="rounded-lg bg-panel px-2 py-1 shadow">←</button>
         {days.map((d) => (
-          <button key={d} onClick={() => setDay(d)} className={`rounded-lg px-3 py-1 text-sm shadow ${d === day ? 'bg-brand text-white' : 'bg-panel'} ${d === todayISO() ? 'ring-2 ring-amber-400' : ''}`}>
+          <button key={d} onClick={() => setDay(d)} className={`min-w-[3.6rem] shrink-0 rounded-lg px-3 py-2 text-sm shadow ${d === day ? 'bg-brand text-white' : 'bg-panel'} ${d === todayISO() ? 'ring-2 ring-amber-400' : ''}`}>
             {dow(d)}<br /><span className="text-[11px]">{fmtShort(d)}</span>
           </button>
         ))}
@@ -31,7 +31,7 @@ export default function Tasks({ user }) {
       <label className="mb-3 flex items-center gap-2 text-sm"><input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} /> Só as minhas tarefas</label>
       <h2 className="mb-2 font-semibold">{dow(day)} {fmtBR(day)} · {list.length} equipamento(s)</h2>
       {list.length === 0 && <p className="rounded-lg bg-panel p-4 text-mute">Nada programado para este dia.</p>}
-      <div key={day} className="stagger space-y-3">
+      <div key={day} className="stagger grid items-start gap-3 lg:grid-cols-2 2xl:grid-cols-3">
         {list.map((e) => (
           <article key={e.id} className={`rounded-xl p-3 shadow ${isLiberado(e) ? 'bg-green-500/10 ring-1 ring-green-500' : 'bg-panel'}`}>
             <div className="flex items-center justify-between"><b className="tagid text-lg">{e.tag}{isLiberado(e) && <span className="ml-2 text-sm text-green-400">✔ Liberado</span>}</b>
