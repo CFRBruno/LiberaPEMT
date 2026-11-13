@@ -45,7 +45,7 @@ export default function Evolution() {
       <div className="mb-2 flex flex-wrap items-center gap-3">
         <h2 className="font-semibold">Evolução semanal</h2>
         <input type="month" value={mes} onChange={(e) => setMes(e.target.value)} className="rounded-lg border p-1 text-sm" />
-        <span className="text-sm text-mute">{base == null ? 'Sem importação neste mês.' : `Base: ${base} indisponíveis na 1ª importação do mês`}</span>
+        <span className="whitespace-nowrap text-sm text-mute">{base == null ? 'Sem importação neste mês.' : `Base: ${base} (1ª importação do mês)`}</span>
       </div>
       <div className="h-64 sm:h-80 xl:h-[26rem]">
         <ResponsiveContainer>
@@ -63,7 +63,7 @@ export default function Evolution() {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-2 text-xs text-mute">Barras: serviços marcados como “Realizado” na semana (pela data de realização). Linha: indisponíveis ao fim da semana (última importação, descontados os equipamentos com Liberação realizada).</p>
+      <p className="mt-2 text-xs text-mute" title="Barras: serviços marcados como Realizado na semana. Linhas: indisponíveis ao fim da semana (descontadas as liberações) e taxa sobre a frota.">Barras: realizados · Linhas: indisponíveis e taxa</p>
     </div>
   )
 }

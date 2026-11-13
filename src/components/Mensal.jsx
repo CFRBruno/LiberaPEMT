@@ -24,7 +24,12 @@ export default function Mensal({ mes, ativos, semData, move, onOpen, card }) {
   const alerta = semData.length > 0
   return (
     <div>
-      <p className="mb-2 text-sm text-mute"><b className="text-ink">{uteis.length} dias úteis</b> no mês · {restantes} restantes · {noMes} equipamento(s) programado(s) no mês{restantes > 0 && noMes > 0 ? ` (≈ ${(noMes / uteis.length).toFixed(1).replace('.', ',')} por dia útil)` : ''}</p>
+      <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 whitespace-nowrap text-sm text-mute">
+        <span><b className="text-ink">{uteis.length}</b> dias úteis</span>
+        <span><b className="text-ink">{restantes}</b> restantes</span>
+        <span><b className="text-ink">{noMes}</b> programados</span>
+        {restantes > 0 && noMes > 0 && <span>≈ <b className="text-ink">{(noMes / uteis.length).toFixed(1).replace('.', ',')}</b> por dia útil</span>}
+      </div>
       <div className="grid gap-3 lg:grid-cols-[15rem_1fr] lg:items-start">
         {/* Sem previsão */}
         <div className="lg:sticky lg:top-40">

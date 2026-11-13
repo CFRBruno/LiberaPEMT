@@ -33,7 +33,7 @@ export default function ImportView() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-3">
-      <p className="rounded-lg bg-sky-500/10 p-2 text-sm text-sky-200">Cada importação grava um <b>retrato datado</b> e atualiza o estado atual por TAG. Nada é apagado: equipamentos que não vieram na lista são marcados como <b>liberados</b> na data informada, e serviços/dias já programados são mantidos.</p>
+      <p className="whitespace-nowrap rounded-lg bg-sky-500/10 p-2 text-sm text-sky-200" title="Cada importação grava um retrato datado; quem sai da lista vira liberado; serviços e dias já programados são mantidos.">Importações são acumulativas: <b>nada é apagado</b>.</p>
       <div className="rounded-xl bg-panel p-3 shadow">
         <label className="text-sm font-medium">Arquivo (Excel .xls/.xlsx ou texto .txt/.csv)
           <input type="file" accept=".xls,.xlsx,.txt,.csv,.tsv" onChange={(e) => e.target.files[0] && run(() => parseFile(e.target.files[0]))} className="mt-1 block w-full text-sm" />

@@ -62,8 +62,8 @@ export default function Frota({ user }) {
           <button className="bg-brand col-span-2 rounded-lg p-2">Salvar frota</button>
         </form>
         <form onSubmit={salvarMeta} className="mt-4 flex gap-2 border-t pt-3">
-          <input placeholder={`Meta (%) — atual ${meta}`} value={metaNova} onChange={(e) => setMetaNova(e.target.value)} inputMode="decimal" className="flex-1 p-2" />
-          <button className="rounded-lg border px-3">Alterar meta</button>
+          <input placeholder={`Meta % (atual ${meta})`} value={metaNova} onChange={(e) => setMetaNova(e.target.value)} inputMode="decimal" className="min-w-0 flex-1 p-2" />
+          <button className="shrink-0 rounded-lg border px-3">Alterar meta</button>
         </form>
       </div>
 

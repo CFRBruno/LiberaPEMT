@@ -59,7 +59,7 @@ export default function App() {
             <button key={k} onClick={() => setTab(k)} className={`navtab whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors duration-300 ${cur === k ? 'on text-brand [text-shadow:0_0_10px_rgb(239_128_36/.5)]' : 'text-mute hover:text-ink'}`}>{l}</button>
           ))}
         </nav>
-        {store.demo && <div className="bg-brand/90 px-3 py-1 text-center text-xs font-medium text-black">Modo demonstração: dados salvos só neste navegador. Configure o Firebase (.env) para uso real.</div>}
+        {store.demo && <div className="truncate bg-brand/90 px-3 py-1 text-center text-xs font-medium text-black">Modo demonstração · dados só neste navegador</div>}
       </header>
       <main key={cur} className="tab-enter mx-auto max-w-[1600px] p-3">
         {cur === 'plan' && <Kanban user={user} onFrota={() => setTab('frota')} />}
