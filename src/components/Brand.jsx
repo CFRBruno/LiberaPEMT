@@ -3,9 +3,10 @@ import { useState } from 'react'
 export default function Brand({ big }) {
   const [semLogo, setSemLogo] = useState(false)
   return (
-    <div className={`flex items-center justify-center gap-2 ${big ? 'flex-col py-2' : ''}`}>
+    <div className={`flex items-center justify-center gap-3 ${big ? 'flex-col py-2' : ''}`}>
       {!semLogo && <img src="/logo.png" alt="Tecnogera" onError={() => setSemLogo(true)} className={big ? 'h-12' : 'h-7'} />}
-      <div className={`font-bold leading-none tracking-wide ${big ? 'text-2xl' : 'text-lg'}`}>
+      {!semLogo && !big && <span className="h-6 w-px bg-line" />}
+      <div className={`font-bold leading-none tracking-wide ${big ? 'text-2xl' : 'text-base'}`}>
         LIBERA<span className="text-brand [text-shadow:0_0_12px_rgb(239_128_36/.7)]">PEMT</span>
         {semLogo && <div className="label !text-[.6rem]">Tecnogera</div>}
       </div>
