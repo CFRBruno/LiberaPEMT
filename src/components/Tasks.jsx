@@ -21,11 +21,13 @@ export default function Tasks({ user }) {
   const [open, setOpen] = useState(null)
   const { novos, marcar, marcarTodos } = useNovos(user)
   const novoKeys = new Set(novos.map((n) => n.key))
-  const abrir = (id) => { setOpen(id); marcar(novos.filter((n) => n.eq.id === id).map((n) => n.key)) }
+  const abrir = (id) => setOpen(id)
   const nome = (u) => users.find((x) => x.username === u)?.nome || u
   const ws = weekStart(day)
   const days = [0, 1, 2, 3, 4].map((i) => addDays(ws, i))
   const ativos = eqs.filter((e) => e.ativo)
+  // meus serviços pendentes (inclui equipamentos sem previsão)
+  const meus = ativos.map((e) => ({ ...e, servicos: (e.servicos || []).filter((s) => (s.resultado || 'pendente') !== 'realizado' && respEfetivos(s, users).includes(user.username)) })).filter((e) => e.servicos.length).sort((a, b) => (a.dia || '9').localeCompare(b.dia || '9'))
   const list = ativos.filter((e) => e.dia === day).map((e) => ({
     ...e, servicos: (e.servicos || []).map((s) => ({ ...s, resp: respEfetivos(s, users) })).filter((s) => !mine || s.resp.includes(user.username)),
   })).filter((e) => !mine || e.servicos.length)
@@ -49,9 +51,25 @@ export default function Tasks({ user }) {
           </ul>
         </section>
       )}
-      <div className="mb-3 flex overflow-hidden rounded-lg border sm:inline-flex sm:w-auto">{seg('dia', 'Dia')}{seg('semana', 'Semana')}{seg('mes', 'Mês')}</div>
+      <div className="mb-3 flex overflow-hidden rounded-lg border sm:inline-flex sm:w-auto">{seg('dia', 'Dia')}{seg('semana', 'Semana')}{seg('mes', 'Mês')}{user.role !== 'pcm' && seg('meus', `Meus${meus.length ? ` ${meus.length}` : ''}`)}</div>
 
-      {modo === 'mes' ? (<>
+      {modo === 'meus' ? (
+        <section>
+          <h2 className="mb-1 font-semibold">Meus serviços pendentes · {meus.length}</h2>
+          <p className="mb-2 text-xs text-mute">Tudo o que está atribuído a você, com ou sem dia definido.</p>
+          {!meus.length && <p className="rounded-lg bg-panel p-4 text-mute">Nenhum serviço pendente para você. 🎉</p>}
+          <div className="grid items-start gap-3 lg:grid-cols-2 2xl:grid-cols-3">
+            {meus.map((e) => (
+              <button key={e.id} onClick={() => abrir(e.id)} className="glow block w-full rounded-xl border bg-panel p-3 text-left">
+                <span className="flex items-center justify-between gap-2"><b className="tagid text-lg">{e.tag}</b>
+                  <span className={`whitespace-nowrap rounded-lg px-2 py-0.5 text-xs ${e.dia ? 'border border-brand/50 text-brand' : 'bg-red-500/15 text-red-300'}`}>{e.dia ? `${dow(e.dia)} ${fmtShort(e.dia)}` : 'sem previsão'}</span></span>
+                <span className="mt-0.5 flex items-center gap-2 text-sm text-mute"><EquipIcon e={e} size={18} /><span className="truncate">{e.modelo}</span></span>
+                <span className="mt-2 flex flex-wrap gap-1.5">{e.servicos.map((s) => <span key={s.id} className="flex items-center gap-1.5 rounded-lg border px-2 py-1 text-sm"><b>{s.tipo}</b><StatusPill r={s.resultado} />{novoKeys.has(`${e.id}:${s.id}`) && <span className="rounded bg-brand px-1.5 text-[10px] font-bold text-black">NOVO</span>}</span>)}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : modo === 'mes' ? (<>
         <div className="mb-3 flex items-center gap-2">
           <button onClick={() => setMes(addMes(mes, -1))} className="rounded-lg bg-panel px-3 py-2 shadow">←</button>
           <b className="flex-1 text-center sm:flex-none">{MESES[+mes.slice(5, 7) - 1]} {mes.slice(0, 4)}</b>
@@ -97,7 +115,7 @@ export default function Tasks({ user }) {
           </div>
         </>)}
       </>)}
-      {open && <EquipView eq={eqs.find((e) => e.id === open)} users={users} onClose={() => setOpen(null)} />}
+      {open && <EquipView eq={eqs.find((e) => e.id === open)} users={users} user={user} novoKeys={novoKeys} onVisto={marcar} onClose={() => setOpen(null)} />}
     </div>
   )
 }

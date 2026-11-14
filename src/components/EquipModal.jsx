@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import Portal from './Portal.jsx'
+import { useEffect, useState } from 'react'
 import { useStore } from '../lib/store.js'
 import { autoResp, diasTxt, RESULTADOS, SERVICOS, SETORES, STATUS_CLS } from '../lib/constants.js'
 import { addDays, dow, fmtBRtime, fmtShort, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
@@ -14,6 +15,7 @@ const Secao = ({ titulo, extra, children }) => (
 
 export default function EquipModal({ eq, users, onClose }) {
   const store = useStore()
+  useEffect(() => { const o = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = o } }, [])
   const [dia, setDia] = useState(eq.dia || '')
   const [obs, setObs] = useState(eq.obs || '')
   const [servicos, setServicos] = useState(eq.servicos || [])
@@ -34,8 +36,8 @@ export default function EquipModal({ eq, users, onClose }) {
   const hoje = todayISO()
 
   return (
-    <div data-modal className="fixed inset-0 z-30 flex items-end justify-center bg-black/60 sm:items-center" onClick={onClose}>
-      <div className="flex max-h-[94dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border bg-panel sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
+    <Portal><div data-modal className="fixed inset-0 z-30 flex items-end justify-center bg-black/60 sm:items-center">
+      <div className="flex max-h-[94dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border bg-panel sm:rounded-2xl">
         {/* Cabeçalho */}
         <header className="flex items-start justify-between gap-3 border-b px-4 py-3">
           <div className="min-w-0">
@@ -139,6 +141,6 @@ export default function EquipModal({ eq, users, onClose }) {
           <button onClick={save} className="bg-brand rounded-lg px-5 py-2">Salvar</button>
         </footer>
       </div>
-    </div>
+    </div></Portal>
   )
 }
