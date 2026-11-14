@@ -57,7 +57,7 @@ export default function Users({ me }) {
 
   return (
     <div className="mx-auto max-w-2xl space-y-3">
-      <form onSubmit={add} className="grid gap-2 rounded-xl border bg-panel p-3 sm:grid-cols-2">
+      <form data-tour="membros" onSubmit={add} className="grid gap-2 rounded-xl border bg-panel p-3 sm:grid-cols-2">
         <h3 className="label sm:col-span-2">Novo membro</h3>
         <input required placeholder="Usuário (login)" autoCapitalize="none" value={f.username} onChange={(e) => setF({ ...f, username: e.target.value.replace(/[^a-zA-Z0-9._-]/g, '') })} className={inp} />
         <input required placeholder="Nome" value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} className={inp} />

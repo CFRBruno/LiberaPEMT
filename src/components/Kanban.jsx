@@ -27,7 +27,7 @@ export default function Kanban({ user, onFrota }) {
   const drop = (e, dia) => { e.preventDefault(); const t = e.dataTransfer.getData('text/plain'); if (t) move(t, dia) }
 
   const card = (e) => (
-    <div key={e.id} draggable onDragStart={(ev) => ev.dataTransfer.setData('text/plain', e.id)} onClick={() => setOpen(e.id)}
+    <div key={e.id} data-tour={e.id === semData[0]?.id ? 'card' : undefined} draggable onDragStart={(ev) => ev.dataTransfer.setData('text/plain', e.id)} onClick={() => setOpen(e.id)}
       className={`cursor-pointer rounded-lg border p-2 shadow-sm glow ${isLiberado(e) ? 'border-green-500 bg-green-500/10' : 'bg-panel'}`}>
       <div className="flex flex-wrap items-center justify-between gap-x-1">
         <b className="tagid text-sm">{e.tag}{isLiberado(e) && <span className="ml-1 text-green-400">✔ Liberado</span>}</b>
@@ -44,7 +44,7 @@ export default function Kanban({ user, onFrota }) {
   const column = ({ title, sub, k, items, today }) => {
     const alerta = k === 'sem' && items.length > 0
     return (
-    <section key={k} data-col={k} onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, k === 'sem' ? null : k)}
+    <section key={k} data-col={k} data-tour={k === 'sem' ? 'sem' : undefined} onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, k === 'sem' ? null : k)}
       className={`corners flex w-[84vw] max-w-sm shrink-0 snap-start flex-col rounded-xl border p-2 lg:h-full lg:min-h-0 lg:w-auto lg:max-w-none lg:min-w-0 ${k === 'sem' ? `sem-col ${alerta ? 'border-dashed border-red-400/60 bg-red-500/5' : 'border-dashed bg-black/25'}` : today ? 'bg-brand/10 ring-2 ring-brand/60' : 'bg-black/25'}`}>
       {k === 'sem' && <i className="sem-divider" />}
       <h3 className="label mb-2 flex shrink-0 items-center justify-between gap-2 !text-ink">
@@ -84,7 +84,7 @@ export default function Kanban({ user, onFrota }) {
     <div>
       <TaxaBanner onFrota={onFrota} />
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <div className="flex overflow-hidden rounded-lg border">{seg('semana', 'Semana')}{seg('mes', 'Mês')}</div>
+        <div data-tour="modo-plan" className="flex overflow-hidden rounded-lg border">{seg('semana', 'Semana')}{seg('mes', 'Mês')}</div>
         {modo === 'semana' ? (<>
           <button onClick={() => setWs(addDays(ws, -7))} className="rounded-lg bg-panel px-3 py-1 shadow">←</button>
           <b>Semana {fmtShort(ws)} – {fmtShort(addDays(ws, 4))}</b>

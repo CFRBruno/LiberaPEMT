@@ -53,7 +53,7 @@ export default function Frota({ user }) {
         </div>
       </section>
 
-      <div className="rounded-xl border bg-panel p-4">
+      <div data-tour="frota-form" className="rounded-xl border bg-panel p-4">
         <h3 className="label mb-2">Atualizar frota total</h3>
         <form onSubmit={salvar} className="grid grid-cols-2 gap-2">
           <input required type="number" min="1" inputMode="numeric" placeholder={`Nova frota (atual: ${total ?? '—'})`} value={novo} onChange={(e) => setNovo(e.target.value)} className="p-2" />

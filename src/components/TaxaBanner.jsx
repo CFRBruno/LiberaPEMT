@@ -6,12 +6,12 @@ export default function TaxaBanner({ onFrota }) {
   const n = nivel(taxa, meta)
   const escala = Math.max(meta * 3, taxa ?? 0, 1)
   if (total == null) return (
-    <button onClick={onFrota} className="corners mb-3 w-full rounded-xl border border-dashed bg-panel p-3 truncate text-left text-sm text-mute">
+    <button data-tour="taxa" onClick={onFrota} className="corners mb-3 w-full rounded-xl border border-dashed bg-panel p-3 truncate text-left text-sm text-mute">
       Defina a <b className="text-brand">frota total</b> para ver a taxa →
     </button>
   )
   return (
-    <div className="corners mb-3 grid grid-cols-[1fr_auto] items-center sm:grid-cols-[auto_1fr_auto] gap-x-4 gap-y-1 rounded-xl border bg-panel px-4 py-2">
+    <div data-tour="taxa" className="corners mb-3 grid grid-cols-[1fr_auto] items-center sm:grid-cols-[auto_1fr_auto] gap-x-4 gap-y-1 rounded-xl border bg-panel px-4 py-2">
       <div>
         <div className="label !text-[.6rem]"><span className="sm:hidden">Indisponibilidade</span><span className="hidden sm:inline">Taxa de indisponibilidade</span></div>
         <div className={`tagid text-3xl font-bold leading-tight sm:text-4xl ${NIVEL_CLS[n]} [text-shadow:0_0_16px_currentColor]`}>{fmtPct(taxa)}</div>

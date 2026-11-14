@@ -42,7 +42,7 @@ export default function History() {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div data-tour="hist" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi label="Importações" value={snaps.length} sub={ultimo ? `última em ${fmtBR(ultimo.data)}` : 'nenhuma ainda'} />
         <Kpi label="Indisponíveis na última" value={ultimo?.total ?? '—'} sub={delta == null ? 'sem comparação' : delta === 0 ? 'igual à anterior' : `${delta > 0 ? '▲ +' : '▼ '}${delta} vs. anterior`} cls={delta > 0 ? 'text-red-400' : delta < 0 ? 'text-green-400' : ''} />
         <Kpi label="Equipamentos liberados" value={liberados.length} sub="desde o início" cls="text-green-400" />

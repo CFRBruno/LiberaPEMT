@@ -38,7 +38,7 @@ export default function ImportView() {
     <div className="mx-auto max-w-4xl space-y-3">
       <p className="whitespace-nowrap rounded-lg bg-sky-500/10 p-2 text-sm text-sky-200" title="Cada importação grava um retrato datado; quem sai da lista vira liberado; serviços e dias já programados são mantidos.">Importações são acumulativas: <b>nada é apagado</b>.</p>
       <div className="rounded-xl bg-panel p-3 shadow">
-        <label onDragOver={(e) => { e.preventDefault(); setDrag(true) }} onDragLeave={() => setDrag(false)}
+        <label data-tour="drop" onDragOver={(e) => { e.preventDefault(); setDrag(true) }} onDragLeave={() => setDrag(false)}
           onDrop={(e) => { e.preventDefault(); setDrag(false); pick(e.dataTransfer.files[0]) }}
           className={`corners flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 border-dashed px-4 py-6 text-center transition-all duration-200 ${drag ? 'scale-[1.01] border-brand bg-brand/10 shadow-[0_0_24px_rgb(239_128_36/.25)]' : 'border-line bg-black/20 hover:border-brand/60'}`}>
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_0_8px_rgb(239_128_36/.6)]">

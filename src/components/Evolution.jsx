@@ -41,7 +41,7 @@ export default function Evolution() {
   }, [eqs, snaps, mes, frotaEm])
 
   return (
-    <div className="corners rounded-xl border bg-panel p-3">
+    <div data-tour="grafico" className="corners rounded-xl border bg-panel p-3">
       <div className="mb-2 flex flex-wrap items-center gap-3">
         <h2 className="font-semibold">Evolução semanal</h2>
         <input type="month" value={mes} onChange={(e) => setMes(e.target.value)} className="rounded-lg border p-1 text-sm" />
