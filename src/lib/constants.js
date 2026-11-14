@@ -24,3 +24,6 @@ export const autoResp = (s, users) => {
   return setor ? users.filter((u) => u.role !== 'pcm' && u.setor === setor && u.ativo !== false).map((u) => u.username) : []
 }
 export const respEfetivos = (s, users) => [...new Set([...(s.resp || []), ...autoResp(s, users)])]
+
+// "57 dias em manutenção" / "12 dias em inspeção"
+export const diasTxt = (e) => `${e.dias ?? '?'} dias em ${(e.status || 'manutenção').toLowerCase()}`

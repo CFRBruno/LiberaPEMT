@@ -1,18 +1,21 @@
+import { useEffect } from 'react'
 import { dow, fmtShort, semanasUteis, todayISO } from '../lib/dates.js'
 import { isLiberado } from '../lib/liberado.js'
 import { STATUS_CLS } from '../lib/constants.js'
 import { EquipIcon } from './EquipIcon.jsx'
 
 // Visão mensal: calendário só com dias úteis (Seg–Sex). No celular vira lista vertical.
-export default function Mensal({ mes, ativos, semData, move, onOpen, card }) {
+export default function Mensal({ mes, ativos, semData, move, onOpen, card, leitor = false }) {
   const semanas = semanasUteis(mes)
+  // no celular, abre rolando até o dia atual (se estiver no mês exibido)
+  useEffect(() => { if (window.innerWidth < 1024) document.getElementById('dia-hoje')?.scrollIntoView({ block: 'center' }) }, [mes])
   const uteis = semanas.flatMap((s) => s.dias.filter(Boolean))
   const hoje = todayISO()
   const restantes = uteis.filter((d) => d >= hoje).length
   const noMes = ativos.filter((e) => e.dia?.startsWith(mes)).length
   const drop = (e, dia) => { e.preventDefault(); const t = e.dataTransfer.getData('text/plain'); if (t) move(t, dia) }
   const mini = (e) => (
-    <div key={e.id} draggable onDragStart={(ev) => ev.dataTransfer.setData('text/plain', e.id)} onClick={() => onOpen(e.id)}
+    <div key={e.id} draggable={!leitor} onDragStart={(ev) => ev.dataTransfer.setData('text/plain', e.id)} onClick={() => onOpen(e.id)}
       className={`glow cursor-pointer rounded-md border px-1.5 py-1 text-xs ${isLiberado(e) ? 'border-green-500 bg-green-500/10' : 'bg-panel'}`}>
       <div className="flex items-center justify-between gap-1">
         <b className="tagid truncate">{e.tag}</b>
@@ -31,9 +34,9 @@ export default function Mensal({ mes, ativos, semData, move, onOpen, card }) {
         <span><b className="text-ink">{noMes}</b> programados</span>
         {restantes > 0 && noMes > 0 && <span>≈ <b className="text-ink">{(noMes / uteis.length).toFixed(1).replace('.', ',')}</b> por dia útil</span>}
       </div>
-      <div className="grid gap-3 lg:grid-cols-[15rem_1fr] lg:items-start">
-        {/* Sem previsão */}
-        <div className="lg:sticky lg:top-40">
+      <div className={`grid gap-3 lg:items-start ${leitor ? '' : 'lg:grid-cols-[15rem_1fr]'}`}>
+        {/* Sem previsão (só editores) */}
+        {!leitor && <div className="lg:sticky lg:top-40">
         <section onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, null)}
           className={`corners rounded-xl border border-dashed p-2 ${alerta ? 'border-red-400/60 bg-red-500/5' : 'bg-black/25'}`}>
           <h3 className="label mb-2 flex items-center justify-between !text-ink">
@@ -42,7 +45,7 @@ export default function Mensal({ mes, ativos, semData, move, onOpen, card }) {
           </h3>
           <div className="max-h-[60dvh] space-y-2 overflow-y-auto lg:max-h-[calc(100dvh-16rem)]">{semData.map(card)}</div>
         </section>
-        </div>
+        </div>}
 
         {/* Calendário */}
         <div className="grid grid-cols-1 gap-2 lg:grid-cols-5">
@@ -52,7 +55,7 @@ export default function Mensal({ mes, ativos, semData, move, onOpen, card }) {
               <div className="label col-span-full mt-1 border-b pb-0.5 lg:hidden">Semana de {fmtShort(s.ws)}</div>
               {s.dias.map((d, i) => d ? (
                 <section key={d} onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, d)}
-                  className={`min-h-24 min-w-0 rounded-xl border p-1.5 ${d === hoje ? 'bg-brand/10 ring-2 ring-brand/60' : 'bg-black/25'} ${d < hoje ? 'opacity-70' : ''}`}>
+                  id={d === hoje ? 'dia-hoje' : undefined} className={`min-w-0 rounded-xl border p-1.5 lg:min-h-24 ${d === hoje ? 'bg-brand/10 ring-2 ring-brand/60' : 'bg-black/25'} ${d < hoje ? 'opacity-70' : ''}`}>
                   <div className="mb-1 flex items-center justify-between text-xs"><b className={d === hoje ? 'text-brand' : ''}>{fmtShort(d)} <span className="font-normal text-mute">{dow(d)}</span></b>
                     <span className="text-mute">{ativos.filter((e) => e.dia === d).length || ''}</span></div>
                   <div className="space-y-1">{ativos.filter((e) => e.dia === d).map(mini)}</div>
