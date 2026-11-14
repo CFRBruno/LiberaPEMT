@@ -14,6 +14,8 @@ npm run dev      # sem .env = MODO DEMONSTRAÇÃO (pcm/pcm123 e tecnico/tecnico1
 3. Colar `firestore.rules` em Firestore → Regras.
 4. Criar os **administradores** (Bruno e Claudio) manualmente: em Authentication, adicionar `usuario@liberapemt.app` + senha; em Firestore, criar `users/<UID>` com `{ username: "bruno", nome: "Bruno", role: "pcm", admin: true, ativo: true }`. Só administradores veem a aba **Membros** e criam/editam/desativam usuários; as regras do Firestore também impõem isso.
 
+> **Para colocar no ar, siga o `COLOCAR-NO-AR.md`.**
+
 ## Como funciona
 - **Planejamento**: visão Semana (Seg–Sex) ou Mês (só dias úteis), com arrastar e soltar.
 - **PCM** (categoria Editor): importa (Excel ou texto colado — mesmo resultado), arrasta equipamentos para os dias, define serviços/responsáveis, marca resultado (Realizado/Adiado/Fora do prazo/Não realizado), data de realização e observações.
