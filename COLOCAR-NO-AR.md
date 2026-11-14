@@ -48,5 +48,5 @@ git pull && npm run deploy
 
 ## Observações
 - Instalar no celular: abra o endereço no Chrome → menu → **Adicionar à tela inicial**.
-- Troca de senha de outra pessoa não existe no site (exige função de servidor). Se alguém esquecer, o administrador pode rodar `npm run admin -- usuario "Nome" NOVASENHA` (isso redefine a senha).
+- Senhas **não podem ser consultadas** (o Firebase guarda só um código irreversível). Se alguém esquecer, redefina com `npm run senha -- usuario NOVASENHA` (precisa do `chave-servico.json`). Esse comando só troca a senha, sem mudar tipo nem permissões. **Não** use `npm run admin` para isso: ele cria/transforma em administrador.
 - Faça uma revisão final (segurança e regras) antes de liberar para toda a equipe.
