@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 44" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Plataforma tesoura (verde estilo Zoomlion) -->
+  <g transform="translate(0 9) scale(.66)" stroke="#35b34a" stroke-width="3.2">
+    <rect x="7" y="9.5" width="34" height="3.5" rx="1"/><path d="M9 9.5V3.5h30v6"/>
+    <path d="M13 29.5 35 22M35 29.5 13 22M13 22l22-7.5"/>
+    <rect x="5" y="29.5" width="38" height="4.5" rx="1.5"/><circle cx="13" cy="36.3" r="2.7"/><circle cx="35" cy="36.3" r="2.7"/>
+  </g>
+  <!-- Plataforma articulada (laranja) -->
+  <g transform="translate(32.5 10.5) scale(.565)" stroke="#ef8024" stroke-width="3.4">
+    <rect x="4" y="30" width="32" height="4.5" rx="1.5"/><circle cx="11" cy="36.5" r="2.8"/><circle cx="29" cy="36.5" r="2.8"/>
+    <path d="M13 30v-4h12v4M19 26 27.5 9M27.5 9 43 5.5"/><path d="M41 5.5h11v8H41zM41 2.5h11v3"/>
+  </g>
+</svg>
