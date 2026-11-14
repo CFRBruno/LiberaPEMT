@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Portal from './Portal.jsx'
+import Teclas, { DicaTeclas } from './Teclas.jsx'
 import { useStore } from '../lib/store.js'
 import { fmtPct, nivel, NIVEL_BAR, NIVEL_CLS, useFrota } from '../lib/frota.js'
 import { fmtBR, nowStamp } from '../lib/dates.js'
@@ -96,21 +97,25 @@ export default function Frota({ user }) {
       </section>
       {edit && (
         <Portal><div data-modal className="fixed inset-0 z-40 flex items-end justify-center bg-black/60 sm:items-center">
+          <Teclas onEnter={salvarEdicao} onEsc={() => setEdit(null)} />
           <div className="w-full max-w-sm space-y-3 rounded-t-2xl border bg-panel p-4 sm:rounded-2xl">
             <h2 className="text-lg font-bold">Editar atualização de frota</h2>
             <label className="block text-sm">Frota total<input type="number" min="1" inputMode="numeric" value={edit.total} onChange={(e) => setEdit({ ...edit, total: e.target.value })} className="mt-1 w-full p-2" /></label>
             <label className="block text-sm">Data<input type="date" value={edit.data} onChange={(e) => setEdit({ ...edit, data: e.target.value })} className="mt-1 w-full p-2" /></label>
             <label className="block text-sm">Motivo<input value={edit.obs || ''} onChange={(e) => setEdit({ ...edit, obs: e.target.value })} className="mt-1 w-full p-2" /></label>
             <div className="flex justify-end gap-2"><button onClick={() => setEdit(null)} className="rounded-lg border px-4 py-2">Cancelar</button><button onClick={salvarEdicao} className="bg-brand rounded-lg px-5 py-2">Salvar</button></div>
+            <DicaTeclas confirmar="salva" />
           </div>
         </div></Portal>
       )}
       {apagar && (
         <Portal><div data-modal className="fixed inset-0 z-40 flex items-end justify-center bg-black/60 sm:items-center">
+          <Teclas onEnter={confirmarApagar} onEsc={() => setApagar(null)} />
           <div className="w-full max-w-sm space-y-3 rounded-t-2xl border border-red-400/50 bg-panel p-4 sm:rounded-2xl">
             <h2 className="text-lg font-bold">Excluir atualização?</h2>
             <p className="text-sm text-mute">Frota de <b className="text-ink">{apagar.total}</b> em {fmtBR(apagar.data)}{apagar.id === regs[0]?.id ? '. Ela é a atual: a taxa passará a usar a atualização anterior' + (regs.length < 2 ? ' (não há outra, então ficará sem frota definida).' : '.') : '.'}</p>
             <div className="flex justify-end gap-2"><button onClick={() => setApagar(null)} className="rounded-lg border px-4 py-2">Cancelar</button><button onClick={confirmarApagar} className="rounded-lg bg-red-500 px-5 py-2 font-semibold text-white">Excluir</button></div>
+            <DicaTeclas confirmar="exclui" />
           </div>
         </div></Portal>
       )}

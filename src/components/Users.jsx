@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Portal from './Portal.jsx'
+import Teclas, { DicaTeclas } from './Teclas.jsx'
 import { useCol, useStore } from '../lib/store.js'
 import { categoria, tipoUsuario } from '../lib/constants.js'
 
@@ -80,6 +81,7 @@ export default function Users({ me }) {
 
       {edit && (
         <Portal><div data-modal className="fixed inset-0 z-30 flex items-end justify-center bg-black/50 sm:items-center">
+          <Teclas onEnter={salvar} onEsc={() => setEdit(null)} />
           <div className="w-full max-w-md space-y-3 rounded-t-2xl border bg-panel p-4 sm:rounded-2xl">
             <h2 className="text-lg font-bold">Editar membro</h2>
             <label className="block text-sm">Usuário (login)<input autoCapitalize="none" value={edit.username} onChange={(e) => setEdit({ ...edit, username: e.target.value.replace(/[^a-zA-Z0-9._-]/g, '') })} className={`${inp} mt-1 w-full`} /></label>
@@ -97,6 +99,7 @@ export default function Users({ me }) {
               <button onClick={() => setEdit(null)} className="rounded-lg border px-4 py-2">Cancelar</button>
               <button onClick={salvar} className="bg-brand rounded-lg px-4 py-2">Salvar</button>
             </div>
+            <DicaTeclas confirmar="salva" />
           </div>
         </div></Portal>
       )}

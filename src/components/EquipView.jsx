@@ -1,4 +1,5 @@
 import Portal from './Portal.jsx'
+import Teclas from './Teclas.jsx'
 import { useEffect } from 'react'
 import { diasTxt, respEfetivos, STATUS_CLS } from '../lib/constants.js'
 import { dow, fmtBR, fmtBRtime, fmtShort } from '../lib/dates.js'
@@ -23,6 +24,7 @@ export default function EquipView({ eq, users, user, novoKeys = new Set(), onVis
 
   return (
     <Portal><div data-modal className="fixed inset-0 z-30 flex items-end justify-center bg-black/60 sm:items-center">
+      <Teclas onEnter={() => { if (novosAqui.length) onVisto?.(novosAqui); onClose() }} onEsc={onClose} />
       <div className="flex max-h-[88dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border bg-panel sm:rounded-2xl">
         <header className="flex items-start justify-between gap-3 border-b px-4 py-3">
           <div className="min-w-0">

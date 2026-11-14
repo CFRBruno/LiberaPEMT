@@ -1,4 +1,5 @@
 import Portal from './Portal.jsx'
+import Teclas from './Teclas.jsx'
 import { useEffect, useState } from 'react'
 import { useStore } from '../lib/store.js'
 import { autoResp, diasTxt, RESULTADOS, SERVICOS, SETORES, STATUS_CLS } from '../lib/constants.js'
@@ -37,6 +38,7 @@ export default function EquipModal({ eq, users, onClose }) {
 
   return (
     <Portal><div data-modal className="fixed inset-0 z-30 flex items-end justify-center bg-black/60 sm:items-center">
+      <Teclas onEnter={save} onEsc={onClose} />
       <div className="flex max-h-[94dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border bg-panel sm:rounded-2xl">
         {/* Cabeçalho */}
         <header className="flex items-start justify-between gap-3 border-b px-4 py-3">
