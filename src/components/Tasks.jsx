@@ -19,7 +19,7 @@ export default function Tasks({ user }) {
   const [mes, setMes] = useState(proxDiaUtil(todayISO()).slice(0, 7))
   const [mine, setMine] = useState(user.role === 'tecnico')
   const [open, setOpen] = useState(null)
-  const [svc, setSvc] = useState(() => Object.entries(SETOR_DO_SERVICO).find(([, st]) => st === user.setor)?.[0] || SERVICOS[0])
+  const [svcs, setSvcs] = useState(() => [Object.entries(SETOR_DO_SERVICO).find(([, st]) => st === user.setor)?.[0] || SERVICOS[0]])
   const [filtro, setFiltro] = useState('todos')
   const [soMeus, setSoMeus] = useState(false)
   const { novos, marcar, marcarTodos } = useNovos(user)
@@ -29,12 +29,16 @@ export default function Tasks({ user }) {
   const ws = weekStart(day)
   const days = [0, 1, 2, 3, 4].map((i) => addDays(ws, i))
   const ativos = eqs.filter((e) => e.ativo)
-  // Aba Serviços: equipamentos vinculados a cada tipo de serviço
-  const porServico = (tipo) => ativos.flatMap((e) => (e.servicos || []).filter((s) => s.tipo === tipo).map((s) => ({ e, s: { ...s, resp: respEfetivos(s, users) } })))
+  // Aba Serviços: equipamentos vinculados aos tipos de serviço selecionados (vários ao mesmo tempo; nenhum = todos)
   const pend = (r) => (r || 'pendente') !== 'realizado'
-  const lista = porServico(svc).filter(({ s }) => (filtro === 'todos' || (s.resultado || 'pendente') === filtro) && (!soMeus || s.resp.includes(user.username)))
-    .sort((a, b) => (pend(b.s.resultado) - pend(a.s.resultado)) || (a.e.dia || '9').localeCompare(b.e.dia || '9'))
-  const contFiltro = (k) => porServico(svc).filter(({ s }) => k === 'todos' || (s.resultado || 'pendente') === k).length
+  const tipos = svcs.length ? svcs : SERVICOS
+  const toggleSvc = (t) => setSvcs((l) => (l.includes(t) ? l.filter((x) => x !== t) : [...l, t]))
+  const pendentesDe = (t) => ativos.reduce((n, e) => n + (e.servicos || []).filter((s) => s.tipo === t && pend(s.resultado)).length, 0)
+  const doTipo = ativos.map((e) => ({ e, ss: (e.servicos || []).filter((s) => tipos.includes(s.tipo)).map((s) => ({ ...s, resp: respEfetivos(s, users) })) })).filter(({ ss }) => ss.length)
+  const contFiltro = (k) => doTipo.reduce((n, { ss }) => n + ss.filter((s) => k === 'todos' || (s.resultado || 'pendente') === k).length, 0)
+  const lista = doTipo.map(({ e, ss }) => ({ e, ss: ss.filter((s) => (filtro === 'todos' || (s.resultado || 'pendente') === filtro) && (!soMeus || s.resp.includes(user.username))) }))
+    .filter(({ ss }) => ss.length)
+    .sort((a, b) => (b.ss.some((s) => pend(s.resultado)) - a.ss.some((s) => pend(s.resultado))) || (a.e.dia || '9').localeCompare(b.e.dia || '9'))
   const list = ativos.filter((e) => e.dia === day).map((e) => ({
     ...e, servicos: (e.servicos || []).map((s) => ({ ...s, resp: respEfetivos(s, users) })).filter((s) => !mine || s.resp.includes(user.username)),
   })).filter((e) => !mine || e.servicos.length)
@@ -62,10 +66,13 @@ export default function Tasks({ user }) {
 
       {modo === 'servicos' ? (
         <section>
-          <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1">
-            {SERVICOS.map((t) => { const pendentes = porServico(t).filter(({ s }) => pend(s.resultado)).length
-              return <button key={t} onClick={() => setSvc(t)} className={`shrink-0 rounded-lg border px-3 py-2 text-sm ${svc === t ? 'border-brand bg-brand/15 text-brand' : 'bg-panel text-mute'}`}>{t} {pendentes > 0 && <span className="ml-1 rounded-full bg-brand px-1.5 text-[11px] font-bold text-black">{pendentes}</span>}</button> })}
+          <div className="mb-1 flex gap-1.5 overflow-x-auto pb-1">
+            <button onClick={() => setSvcs([])} className={`shrink-0 rounded-lg border px-3 py-2 text-sm ${!svcs.length ? 'border-brand bg-brand/15 text-brand' : 'bg-panel text-mute'}`}>Todos</button>
+            {SERVICOS.map((t) => { const n = pendentesDe(t); const on = svcs.includes(t)
+              return <button key={t} onClick={() => toggleSvc(t)} aria-pressed={on} className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-sm ${on ? 'border-brand bg-brand/15 text-brand' : 'bg-panel text-mute'}`}>
+                <span className={`flex h-4 w-4 items-center justify-center rounded border text-[10px] leading-none ${on ? 'border-brand bg-brand text-black' : ''}`}>{on ? '✓' : ''}</span>{t}{n > 0 && <span className="rounded-full bg-brand px-1.5 text-[11px] font-bold text-black">{n}</span>}</button> })}
           </div>
+          <p className="mb-2 text-xs text-mute">Toque para marcar um ou mais serviços.</p>
           <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1">
             {[['todos', 'Todos'], ...Object.entries(RESULTADOS).map(([k, v]) => [k, v.label])].map(([k, l]) => (
               <button key={k} onClick={() => setFiltro(k)} className={`flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs ${filtro === k ? 'border-ink/60 bg-panel2 text-ink' : 'text-mute'}`}>
@@ -73,19 +80,23 @@ export default function Tasks({ user }) {
             ))}
           </div>
           <label className="mb-2 flex items-center gap-2 text-sm"><input type="checkbox" checked={soMeus} onChange={(e) => setSoMeus(e.target.checked)} /> Só os meus</label>
-          <h2 className="mb-2 font-semibold">{svc} · {lista.length} equipamento(s)</h2>
-          {!lista.length && <p className="rounded-lg bg-panel p-4 text-mute">Nenhum equipamento com {svc.toLowerCase()} {filtro === 'todos' ? '' : `(${RESULTADOS[filtro].label.toLowerCase()}) `}por aqui.</p>}
+          <h2 className="mb-2 font-semibold">{svcs.length ? svcs.join(' + ') : 'Todos os serviços'} · {lista.length} equipamento(s)</h2>
+          {!lista.length && <p className="rounded-lg bg-panel p-4 text-mute">Nenhum equipamento encontrado{filtro === 'todos' ? '' : ` com resultado "${RESULTADOS[filtro].label.toLowerCase()}"`}.</p>}
           <div className="grid items-start gap-3 lg:grid-cols-2 2xl:grid-cols-3">
-            {lista.map(({ e, s }) => (
-              <button key={`${e.id}:${s.id}`} onClick={() => abrir(e.id)} className={`glow block w-full rounded-xl border bg-panel p-3 text-left ${(s.resultado || 'pendente') === 'realizado' ? 'opacity-75' : ''}`}>
-                <span className="flex items-center justify-between gap-2"><b className="tagid text-lg">{e.tag}{novoKeys.has(`${e.id}:${s.id}`) && <span className="ml-2 rounded bg-brand px-1.5 font-sans text-[10px] font-bold text-black">NOVO</span>}</b>
-                  <StatusPill r={s.resultado} /></span>
+            {lista.map(({ e, ss }) => (
+              <button key={e.id} onClick={() => abrir(e.id)} className="glow block w-full rounded-xl border bg-panel p-3 text-left">
+                <span className="flex items-center justify-between gap-2"><b className="tagid text-lg">{e.tag}</b>
+                  <span className={`whitespace-nowrap rounded-md px-2 py-0.5 text-xs ${e.dia ? 'border border-brand/50 text-brand' : 'bg-red-500/15 text-red-300'}`}>{e.dia ? `${dow(e.dia)} ${fmtShort(e.dia)}` : 'sem previsão'}</span></span>
                 <span className="mt-0.5 flex items-center gap-2 text-sm text-mute"><EquipIcon e={e} size={18} /><span className="truncate">{e.modelo}</span></span>
-                <span className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-mute">
-                  <span className={`whitespace-nowrap rounded-md px-2 py-0.5 ${e.dia ? 'border border-brand/50 text-brand' : 'bg-red-500/15 text-red-300'}`}>{e.dia ? `${dow(e.dia)} ${fmtShort(e.dia)}` : 'sem previsão'}</span>
-                  <span className="truncate">Resp.: {s.resp.length ? s.resp.map(nome).join(', ') : 'não definido'}</span>
+                <span className="mt-2 block space-y-1.5">
+                  {ss.map((s) => (
+                    <span key={s.id} className={`block rounded-lg border px-2.5 py-1.5 ${(s.resultado || 'pendente') === 'realizado' ? 'opacity-75' : ''}`}>
+                      <span className="flex items-center justify-between gap-2"><b className="flex items-center gap-1.5">{s.tipo}{novoKeys.has(`${e.id}:${s.id}`) && <span className="rounded bg-brand px-1.5 text-[10px] font-bold text-black">NOVO</span>}</b><StatusPill r={s.resultado} /></span>
+                      <span className="block truncate text-xs text-mute">Resp.: {s.resp.length ? s.resp.map(nome).join(', ') : 'não definido'}</span>
+                      {s.obs && <span className="block truncate text-sm">📝 {s.obs}</span>}
+                    </span>
+                  ))}
                 </span>
-                {s.obs && <span className="mt-1 block truncate text-sm">📝 {s.obs}</span>}
               </button>
             ))}
           </div>
