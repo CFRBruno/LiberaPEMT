@@ -14,6 +14,9 @@ service cloud.firestore {
     // Mapa login -> e-mail interno: leitura pontual (get) pública para permitir o login; só admin escreve.
     match /logins/{name} { allow get: if true; allow list: if false; allow write: if isAdmin(); }
 
+    // Presença (quem está online): cada pessoa escreve só o próprio registro; só PCM lê.
+    match /presenca/{uid} { allow read: if isPcm(); allow write: if request.auth != null && request.auth.uid == uid; }
+
     // Membros: todos leem (nomes dos responsáveis); só ADMIN (Bruno e Claudio) cria/edita.
     match /users/{uid} { allow read: if request.auth != null; allow write: if isAdmin(); }
   }

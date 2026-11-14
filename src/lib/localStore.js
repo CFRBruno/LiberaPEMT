@@ -37,6 +37,7 @@ export const auth = {
     write('users', u)
   },
 }
+export const presenca = (id, data) => { const o = read('presenca'); o[id] = { ...(o[id] || {}), ...data, ts: Date.now() }; write('presenca', o) }
 export const subscribe = (c, cb) => { (subs[c] ||= []).push(cb); emit(c); return () => subs[c].splice(subs[c].indexOf(cb), 1) }
 export async function batch(ops) {
   const cache = {}
