@@ -3,6 +3,8 @@ const K = (c) => 'lpemt:' + c
 const read = (c) => { try { return JSON.parse(localStorage.getItem(K(c))) || {} } catch { return {} } }
 const subs = {}
 const emit = (c) => (subs[c] || []).forEach((f) => f(Object.entries(read(c)).map(([id, v]) => ({ id, ...v }))))
+// Atualiza também quando outra aba do mesmo navegador grava (útil para testar PCM + colaborador lado a lado)
+window.addEventListener('storage', (e) => { if (e.key?.startsWith('lpemt:') && !e.key.startsWith('lpemt:visto') && !e.key.startsWith('lpemt:tour')) emit(e.key.slice(6)) })
 const write = (c, o) => { localStorage.setItem(K(c), JSON.stringify(o)); emit(c) }
 
 if (!localStorage.getItem(K('users'))) {
@@ -37,6 +39,7 @@ export const auth = {
     write('users', u)
   },
 }
+export const agora = () => Date.now()
 export const subscribe = (c, cb) => { (subs[c] ||= []).push(cb); emit(c); return () => subs[c].splice(subs[c].indexOf(cb), 1) }
 export async function batch(ops) {
   const cache = {}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useEquip } from '../lib/marcacoes.js'
 import { useCol } from '../lib/store.js'
 import { addDays, addMes, dow, fmtBR, fmtShort, MESES, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
 import { diasTxt, RESULTADOS, respEfetivos, SERVICOS, SETOR_DO_SERVICO, STATUS_CLS } from '../lib/constants.js'
@@ -7,12 +8,14 @@ import { isLiberado } from '../lib/liberado.js'
 import { EquipIcon, equipTexto } from './EquipIcon.jsx'
 import EquipView from './EquipView.jsx'
 import { useNovos } from '../lib/novos.js'
+import MarcarBotoes from './MarcarBotoes.jsx'
+import { fmtMarca } from './QuemMarcou.jsx'
 import Semanal from './Semanal.jsx'
 import Mensal from './Mensal.jsx'
 
 // Visão da mão de obra (somente leitura, em tempo real): Dia · Semana · Mês.
 export default function Tasks({ user }) {
-  const eqs = useCol('equipamentos')
+  const eqs = useEquip()
   const users = useCol('users')
   const [modo, setModo] = useState('dia')
   const [day, setDay] = useState(proxDiaUtil(todayISO()))
@@ -138,6 +141,8 @@ export default function Tasks({ user }) {
                       <div className="flex items-center justify-between gap-2"><b className="flex items-center gap-1.5">{s.tipo}{novoKeys.has(`${e.id}:${s.id}`) && <span className="rounded bg-brand px-1.5 text-[10px] font-bold text-black">NOVO</span>}</b><StatusPill r={s.resultado} /></div>
                       <p className="text-xs text-mute">Resp.: {s.resp?.length ? s.resp.map(nome).join(', ') : 'não definido'}{s.dataRealizacao && ` · realizado em ${fmtBR(s.dataRealizacao)}`}</p>
                       {s.obs && <p className="text-sm">📝 {s.obs}</p>}
+                      {s._marca && user.role === 'pcm' && <p className="text-xs text-brand">{fmtMarca(s._marca)}</p>}
+                      {s.resp.includes(user.username) && <MarcarBotoes eq={e} s={s} user={user} />}
                     </li>
                   ))}
                   {!e.servicos.length && <li className="text-sm text-mute">Serviços ainda não definidos pelo PCM.</li>}

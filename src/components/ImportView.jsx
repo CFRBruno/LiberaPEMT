@@ -28,7 +28,7 @@ export default function ImportView() {
       data: { ...r, ativo: true, liberadoEm: null, ultImport: stamp, ...(byTag[r.tag] ? {} : { dia: null, servicos: [], obs: '' }) },
     }))
     sairam.forEach((e) => ops.push({ col: 'equipamentos', id: e.id, merge: true, data: { ativo: false, liberadoEm: data } }))
-    ops.push({ col: 'snapshots', id: `${stamp.replace(':', '-')}-${Date.now().toString(36)}`, data: { data, stamp, total: rows.length, itens: rows, novos: novos.map((r) => r.tag), liberados: sairam.map((e) => e.id) } })
+    ops.push({ col: 'snapshots', id: `${stamp.replace(':', '-')}-${Date.now().toString(36)}`, data: { data, stamp, total: rows.length, itens: rows, novos: novos.map((r) => r.tag), criados: rows.filter((r) => !byTag[r.tag]).map((r) => r.tag), liberados: sairam.map((e) => e.id) } })
     await store.batch(ops)
     setMsg(`Importação gravada: ${rows.length} equipamentos, ${novos.length} novos, ${sairam.length} liberados.`)
     setRows(null); setText('')

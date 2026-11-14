@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useEquip } from '../lib/marcacoes.js'
 import { Bar, CartesianGrid, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useCol } from '../lib/store.js'
 import { dataLiberacao } from '../lib/liberado.js'
@@ -9,7 +10,7 @@ const TIPOS = [['Liberação', '#ef8024'], ['Pintura', '#22d3ee'], ['Lavagem', '
 
 // Semanas do mês (seg–dom). Base = nº de indisponíveis na 1ª importação do mês.
 export default function Evolution() {
-  const eqs = useCol('equipamentos')
+  const eqs = useEquip()
   const snaps = useCol('snapshots')
   const { frotaEm, meta } = useFrota()
   const [mes, setMes] = useState(todayISO().slice(0, 7))

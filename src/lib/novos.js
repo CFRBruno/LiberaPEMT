@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useEquip } from './marcacoes.js'
 import { useCol } from './store.js'
 import { autoResp, respEfetivos } from './constants.js'
 
@@ -15,7 +16,7 @@ const subs = new Set()
 const save = (u, o) => { try { localStorage.setItem(K(u), JSON.stringify(o)) } catch { /* ok */ } subs.forEach((f) => f()) }
 
 export function useNovos(user) {
-  const eqs = useCol('equipamentos')
+  const eqs = useEquip()
   const users = useCol('users')
   const [, tick] = useState(0)
   useEffect(() => { const f = () => tick((n) => n + 1); subs.add(f); return () => subs.delete(f) }, [])

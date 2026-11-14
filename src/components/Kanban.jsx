@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEquip } from '../lib/marcacoes.js'
 import { useCol, useStore } from '../lib/store.js'
 import { addDays, addMes, dow, fmtShort, MESES, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
 import Mensal from './Mensal.jsx'
@@ -11,7 +12,7 @@ import EquipModal from './EquipModal.jsx'
 
 export default function Kanban({ user, onFrota }) {
   const store = useStore()
-  const eqs = useCol('equipamentos')
+  const eqs = useEquip()
   const users = useCol('users')
   const [ws, setWs] = useState(weekStart(proxDiaUtil(todayISO())))
   const [open, setOpen] = useState(null)

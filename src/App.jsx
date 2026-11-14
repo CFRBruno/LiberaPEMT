@@ -11,11 +11,15 @@ import Brand from './components/Brand.jsx'
 import Frota from './components/Frota.jsx'
 import TaxaPill from './components/TaxaPill.jsx'
 import { useNovos } from './lib/novos.js'
+import { Toasts, BotaoNotificar, useAvisosPCM } from './components/AvisosPCM.jsx'
 import Tour, { passosTour } from './components/Tour.jsx'
 import { categoria, tipoUsuario } from './lib/constants.js'
 
 const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['chart', 'Evolução'], ['frota', 'Frota'], ['hist', 'Histórico'], ['import', 'Importar'], ['users', 'Membros']]
 const TEC_TABS = [['tasks', 'Tarefas do dia']] // leitores: tela única, sem abas
+
+// Avisos de marcações dos colaboradores (só PCM)
+function AvisosMarcacoes() { const { toasts, fechar } = useAvisosPCM(true); return <Toasts toasts={toasts} fechar={fechar} /> }
 
 // Sino de avisos (só leitores): serviços novos atribuídos a mim
 function Sino({ user }) {
@@ -87,7 +91,7 @@ export default function App() {
       <header className="sticky top-0 z-20 border-b border-brand/40 bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1600px] items-center gap-3 px-3 py-2">
           <Brand />
-          <div className="ml-auto flex items-center gap-2">{!pcm && <Sino user={user} />}<TaxaPill onClick={() => pcm && setTab('frota')} /></div>
+          <div className="ml-auto flex items-center gap-2">{!pcm && <Sino user={user} />}{pcm && <BotaoNotificar />}<TaxaPill onClick={() => pcm && setTab('frota')} /></div>
           {pcm && <span className="label hidden lg:block" title="Use as setas ← → para trocar de aba">{user.nome} · {tipoUsuario(user)} · {categoria(user)}</span>}
           <button onClick={() => setTour(true)} aria-label="Tutorial" title="Tutorial" className="rounded-full border px-2.5 py-1 text-sm text-mute hover:text-brand">?</button>
           <button onClick={() => store.auth.signOut()} className="rounded-lg border px-3 py-1.5 text-sm">Sair</button>
@@ -115,6 +119,7 @@ export default function App() {
         {cur === 'users' && user.admin && <Users me={user} />}
         {cur === 'frota' && <Frota user={user} />}
       </main>
+      {pcm && <AvisosMarcacoes />}
       {tour && <Tour steps={passosTour(user)} tab={cur} setTab={setTab} onClose={fechaTour} />}
     </StoreCtx.Provider>
   )

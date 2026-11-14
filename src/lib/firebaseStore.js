@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth'
-import { getFirestore, collection, onSnapshot, doc, getDoc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore'
+import { getFirestore, collection, onSnapshot, doc, getDoc, setDoc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore'
 
 const cfg = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -52,7 +52,10 @@ export const auth = {
     } finally { await signOut(secAuth) }
   },
 }
-export const subscribe = (c, cb) => onSnapshot(collection(db, c), (s) => cb(s.docs.map((d) => ({ id: d.id, ...d.data() }))))
+// Timestamps do Firestore viram milissegundos; agora() = hora do servidor (não depende do relógio do aparelho)
+const plain = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v && typeof v.toMillis === 'function' ? v.toMillis() : v]))
+export const agora = () => serverTimestamp()
+export const subscribe = (c, cb) => onSnapshot(collection(db, c), (s) => cb(s.docs.map((d) => ({ id: d.id, ...plain(d.data()) }))))
 export async function batch(ops) {
   for (let i = 0; i < ops.length; i += 400) {
     const b = writeBatch(db)

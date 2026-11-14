@@ -11,6 +11,13 @@ service cloud.firestore {
     match /frota/{id}        { allow read: if request.auth != null; allow write: if isPcm(); }
     match /config/{id}       { allow read: if request.auth != null; allow write: if isPcm(); }
 
+    // Marcações dos colaboradores (Realizado/Adiado): todos leem; cada um cria só as próprias; só PCM altera/apaga.
+    match /marcacoes/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && me().ativo != false && request.resource.data.por == me().username && request.resource.data.acao in ['realizado', 'adiado'];
+      allow update, delete: if isPcm();
+    }
+
     // Mapa login -> e-mail interno: leitura pontual (get) pública para permitir o login; só admin escreve.
     match /logins/{name} { allow get: if true; allow list: if false; allow write: if isAdmin(); }
 

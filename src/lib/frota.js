@@ -1,4 +1,5 @@
 import { useCol } from './store.js'
+import { useEquip } from './marcacoes.js'
 import { isLiberado } from './liberado.js'
 
 export const fmtPct = (x) => (x == null ? '—' : `${x.toFixed(1).replace('.', ',')}%`)
@@ -9,7 +10,7 @@ export const NIVEL_BAR = { ok: 'bg-green-500', warn: 'bg-yellow-400', bad: 'bg-r
 
 // Taxa de indisponibilidade = indisponíveis / frota total
 export function useFrota() {
-  const eqs = useCol('equipamentos')
+  const eqs = useEquip()
   const regs = [...useCol('frota')].sort((a, b) => b.stamp.localeCompare(a.stamp))
   const cfg = useCol('config').find((c) => c.id === 'geral')
   const meta = cfg?.meta ?? 5

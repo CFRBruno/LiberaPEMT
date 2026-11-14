@@ -6,6 +6,8 @@ import { dow, fmtBR, fmtBRtime, fmtShort } from '../lib/dates.js'
 import { isLiberado } from '../lib/liberado.js'
 import { EquipIcon, equipTexto } from './EquipIcon.jsx'
 import { StatusPill } from './ServiceChips.jsx'
+import MarcarBotoes from './MarcarBotoes.jsx'
+import { fmtMarca } from './QuemMarcou.jsx'
 
 // Detalhe somente leitura: os serviços (meus primeiro) vêm antes dos dados do equipamento.
 // Só fecha pelo X / botões (clique fora NÃO fecha), e "Entendi" marca os avisos como vistos.
@@ -51,6 +53,8 @@ export default function EquipView({ eq, users, user, novoKeys = new Set(), onVis
                   </div>
                   <p className="mt-0.5 text-xs text-mute">Resp.: {s._resp.length ? s._resp.map(nome).join(', ') : 'não definido'}{s.resultado === 'realizado' && s.dataRealizacao ? ` · realizado em ${fmtBR(s.dataRealizacao)}` : ''}</p>
                   {s.obs && <p className="mt-1 text-sm">📝 {s.obs}</p>}
+                  {s._marca && user?.role === 'pcm' && <p className="mt-1 text-xs text-brand">{fmtMarca(s._marca)}</p>}
+                  {meu(s) && <MarcarBotoes eq={eq} s={s} user={user} />}
                 </li>
               ))}
             </ul>

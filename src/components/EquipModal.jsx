@@ -6,6 +6,7 @@ import { autoResp, diasTxt, RESULTADOS, SERVICOS, SETORES, STATUS_CLS } from '..
 import { addDays, dow, fmtBRtime, fmtShort, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
 import { isLiberado } from '../lib/liberado.js'
 import { EquipIcon, equipTexto } from './EquipIcon.jsx'
+import { fmtMarca } from './QuemMarcou.jsx'
 
 const Secao = ({ titulo, extra, children }) => (
   <section className="mt-5">
@@ -24,12 +25,12 @@ export default function EquipModal({ eq, users, onClose }) {
   const tecnicos = users.filter((u) => u.role !== 'pcm' && u.ativo !== false)
   const nome = (un) => users.find((u) => u.username === un)?.nome || un
   const upd = (id, patch) => setServicos((l) => l.map((s) => (s.id === id ? { ...s, ...patch } : s)))
-  const setRes = (s, r) => upd(s.id, { resultado: r, dataRealizacao: r === 'realizado' ? s.dataRealizacao || todayISO() : s.dataRealizacao || null })
+  const setRes = (s, r) => upd(s.id, { resultadoEm: new Date().toISOString(), _marca: null, resultado: r, dataRealizacao: r === 'realizado' ? s.dataRealizacao || todayISO() : s.dataRealizacao || null })
   const addResp = (s, un) => un && upd(s.id, { resp: [...(s.resp || []), un], atribuicoes: { ...(s.atribuicoes || {}), [un]: new Date().toISOString() } })
   const rmResp = (s, un) => upd(s.id, { resp: (s.resp || []).filter((x) => x !== un) })
   const novo = (tipo) => setServicos((l) => [...l, { id: Math.random().toString(36).slice(2, 9), tipo, resultado: 'pendente', resp: [], obs: '', dataRealizacao: null, criadoEm: new Date().toISOString(), atribuicoes: {} }])
   const save = async () => {
-    await store.batch([{ col: 'equipamentos', id: eq.id, merge: true, data: { dia: dia || null, obs, servicos } }])
+    await store.batch([{ col: 'equipamentos', id: eq.id, merge: true, data: { dia: dia || null, obs, servicos: servicos.map(({ _marca, ...s }) => s) } }])
     onClose()
   }
   const podeServicos = eq.status === 'Manutenção'
@@ -96,6 +97,7 @@ export default function EquipModal({ eq, users, onClose }) {
                           <button key={k} onClick={() => setRes(s, k)} className={`rounded-lg border px-2.5 py-1 text-xs ${(s.resultado || 'pendente') === k ? v.cls + ' ring-2 ring-brand/70 ring-offset-1 ring-offset-panel' : 'text-mute'}`}>{v.label}</button>
                         ))}
                       </div>
+                      {s._marca && <p className="rounded-lg bg-brand/10 px-2 py-1 text-xs text-brand">{fmtMarca(s._marca)}</p>}
                       {s.resultado === 'realizado' && (
                         <label className="flex items-center gap-2 text-xs text-mute">Realizado em <input type="date" value={s.dataRealizacao || ''} onChange={(e) => upd(s.id, { dataRealizacao: e.target.value })} className="p-1" /></label>
                       )}
