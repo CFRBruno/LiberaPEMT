@@ -13,6 +13,7 @@ import TaxaPill from './components/TaxaPill.jsx'
 import { useNovos } from './lib/novos.js'
 import { Toasts, BotaoNotificar, useAvisosPCM } from './components/AvisosPCM.jsx'
 import Tour, { passosTour } from './components/Tour.jsx'
+import Ajuda from './components/Ajuda.jsx'
 import { categoria, tipoUsuario } from './lib/constants.js'
 
 const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['chart', 'Evolução'], ['frota', 'Frota'], ['hist', 'Histórico'], ['import', 'Importar'], ['users', 'Membros']]
@@ -55,14 +56,21 @@ export default function App() {
   // Atalhos no PC: ← / → alternam entre as abas. Esc tira o foco do campo atual (sem apagar o texto),
   // e então as setas voltam a navegar. Ignorado com janela aberta.
   const [flash, setFlash] = useState(null)
-  const [tour, setTour] = useState(false)
+  const [tour, setTour] = useState(null) // null | 'completo' | 'tela'
+  const [ajuda, setAjuda] = useState(false)
   const chaveTour = user ? `lpemt:tour:${user.username}` : null
-  useEffect(() => { // abre sozinho na primeira vez de cada pessoa neste aparelho
+  const chaveAuto = user ? `lpemt:tourauto:${user.username}` : null
+  const ler = (k) => { try { return localStorage.getItem(k) } catch { return null } }
+  const gravar = (k, v) => { try { localStorage.setItem(k, v) } catch { /* ok */ } }
+  const [auto, setAuto] = useState(true) // abrir o tutorial sozinho (preferência do aparelho)
+  useEffect(() => { if (chaveAuto) setAuto(ler(chaveAuto) !== 'nao') }, [chaveAuto]) // eslint-disable-line
+  useEffect(() => { // abre sozinho só na 1ª vez de cada pessoa neste aparelho (e se não pediu para parar)
     if (!chaveTour) return
-    let visto = false; try { visto = localStorage.getItem(chaveTour) === 'ok' } catch { /* ok */ }
-    if (!visto) { const t = setTimeout(() => setTour(true), 900); return () => clearTimeout(t) }
-  }, [chaveTour])
-  const fechaTour = () => { setTour(false); try { localStorage.setItem(chaveTour, 'ok') } catch { /* ok */ } }
+    if (ler(chaveTour) !== 'ok' && ler(chaveAuto) !== 'nao') { const t = setTimeout(() => setTour('completo'), 900); return () => clearTimeout(t) }
+  }, [chaveTour]) // eslint-disable-line
+  const fechaTour = () => { setTour(null); gravar(chaveTour, 'ok') }
+  const nuncaMais = () => { setTour(null); gravar(chaveTour, 'ok'); gravar(chaveAuto, 'nao'); setAuto(false) }
+  const mudaAuto = (v) => { setAuto(v); gravar(chaveAuto, v ? 'sim' : 'nao') }
   const lista = user ? (user.role === 'pcm' ? PCM_TABS.filter(([k]) => k !== 'users' || user.admin) : TEC_TABS).map(([k]) => k) : []
   const mover = (dir) => setTab((t) => { const i = Math.max(0, lista.indexOf(t ?? lista[0])); return lista[(i + dir + lista.length) % lista.length] })
   const ping = (dir) => { setFlash(dir); setTimeout(() => setFlash(null), 260) }
@@ -93,7 +101,7 @@ export default function App() {
           <Brand />
           <div className="ml-auto flex items-center gap-2">{!pcm && <Sino user={user} />}{pcm && <BotaoNotificar />}<TaxaPill onClick={() => pcm && setTab('frota')} /></div>
           {pcm && <span className="label hidden lg:block" title="Use as setas ← → para trocar de aba">{user.nome} · {tipoUsuario(user)} · {categoria(user)}</span>}
-          <button onClick={() => setTour(true)} aria-label="Tutorial" title="Tutorial" className="rounded-full border px-2.5 py-1 text-sm text-mute hover:text-brand">?</button>
+          <button data-tour="ajuda" onClick={() => setAjuda(true)} aria-label="Ajuda" title="Ajuda e tutorial" className="flex shrink-0 items-center gap-1.5 rounded-full border border-brand/50 px-2.5 py-1 text-sm font-semibold text-brand hover:bg-brand/10"><span>?</span><span className="hidden text-xs font-medium sm:inline">Ajuda</span></button>
           <button onClick={() => store.auth.signOut()} className="rounded-lg border px-3 py-1.5 text-sm">Sair</button>
         </div>
         {!pcm && <div className="label mx-auto max-w-[1600px] truncate px-3 pb-2">{user.nome} · {tipoUsuario(user)}</div>}
@@ -120,7 +128,8 @@ export default function App() {
         {cur === 'frota' && <Frota user={user} />}
       </main>
       {pcm && <AvisosMarcacoes />}
-      {tour && <Tour steps={passosTour(user)} tab={cur} setTab={setTab} onClose={fechaTour} />}
+      {ajuda && <Ajuda user={user} auto={auto} onAuto={mudaAuto} onClose={() => setAjuda(false)} onCompleto={() => { setAjuda(false); setTour('completo') }} onTela={() => { setAjuda(false); setTour('tela') }} />}
+      {tour && <Tour steps={(() => { const todos = passosTour(user); const so = tour === 'tela' ? todos.filter((p) => p.tab === cur) : todos; return so.length ? so : todos })()} tab={cur} setTab={setTab} onClose={fechaTour} onNever={nuncaMais} />}
     </StoreCtx.Provider>
   )
 }

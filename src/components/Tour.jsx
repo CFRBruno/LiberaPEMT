@@ -3,7 +3,7 @@ import Portal from './Portal.jsx'
 
 // Tutorial guiado: destaca um elemento (data-tour="...") e explica em passos. Troca de aba sozinho.
 // Teclado: → / Enter avançam, ← voltam, Esc fecha.
-export default function Tour({ steps, tab, setTab, onClose }) {
+export default function Tour({ steps, tab, setTab, onClose, onNever }) {
   const [i, setI] = useState(0)
   const [rect, setRect] = useState(null)
   const [alt, setAlt] = useState(0) // força recálculo ao rolar/redimensionar
@@ -54,7 +54,7 @@ export default function Tour({ steps, tab, setTab, onClose }) {
         ) : <div className="fixed inset-0 bg-[rgba(3,6,12,.78)]" />}
         <div ref={card} className={`fixed left-1/2 w-[min(92vw,360px)] -translate-x-1/2 rounded-2xl border border-brand/50 bg-panel p-4 shadow-2xl ${rect ? (emBaixo ? 'top-3' : 'bottom-3') : 'top-1/2 -translate-y-1/2'}`}>
           <div className="mb-1 flex items-center justify-between"><span className="label !text-brand">Passo {i + 1} de {steps.length}</span>
-            <button onClick={onClose} className="text-xs text-mute underline">Pular tutorial</button></div>
+            <span className="flex gap-3"><button onClick={onClose} className="text-xs text-mute underline">Pular</button>{onNever && <button onClick={onNever} className="text-xs text-mute underline">Não mostrar mais</button>}</span></div>
           <h3 className="text-lg font-bold">{step.titulo}</h3>
           <p className="mt-1 text-sm leading-relaxed text-mute">{step.texto}</p>
           <div className="mt-3 flex h-1 gap-0.5">{steps.map((_, k) => <span key={k} className={`h-full flex-1 rounded-full ${k <= i ? 'bg-brand' : 'bg-line'}`} />)}</div>
@@ -81,6 +81,7 @@ const PCM = [
   { tab: 'import', alvo: 'drop', titulo: 'Importar a lista', texto: 'Arraste a planilha (.xls/.xlsx) ou cole o texto copiado do sistema. Você vê uma prévia antes de confirmar. Quem sai da lista vira "liberado"; dias e serviços já programados são mantidos.' },
   { tab: 'users', alvo: 'membros', admin: true, titulo: 'Membros', texto: 'Só administradores veem esta aba. Crie e edite membros (PCM, Manutenção, Pintura, Lavagem). Pintura e Lavagem são atribuídas sozinhas ao setor certo.' },
   { tab: 'plan', alvo: 'setas', titulo: 'Atalhos de teclado', texto: 'No computador, as setas ← → trocam de aba. Dentro de um campo, aperte Esc para sair dele (o texto fica) e use as setas de novo.' },
+  { alvo: 'ajuda', titulo: 'Precisa de ajuda?', texto: 'Toque em ? a qualquer hora para rever o tutorial completo, ver só o tutorial da tela em que você está ou consultar as perguntas frequentes.' },
   { titulo: 'Tudo pronto! ✅', texto: 'Rotina sugerida: à noite, importe a lista e confira a taxa; arraste os equipamentos para os dias; defina os serviços e responsáveis. Os colaboradores recebem os avisos no celular.' },
 ]
 const LEITOR = [
@@ -91,6 +92,7 @@ const LEITOR = [
   { tab: 'tasks', alvo: 'dias', titulo: 'Escolha o dia', texto: 'Toque num dia da semana para ver os equipamentos programados. As setas mudam de semana.' },
   { tab: 'tasks', alvo: 'cartao-tarefa', titulo: 'Toque no equipamento', texto: 'Abre todos os serviços dele: resultado em cores (verde = realizado, amarelo = adiado, laranja = fora do prazo, vermelho = não realizado), responsáveis e observações.' },
   { tab: 'tasks', alvo: 'taxa-pill', titulo: 'Indicador da frota', texto: 'Mostra a taxa de indisponibilidade da frota. Quanto menor, melhor: a meta é 5%.' },
-  { titulo: 'Pronto! ✅', texto: 'Qualquer dúvida, toque no botão ? no topo para ver este passeio de novo.' },
+  { alvo: 'ajuda', titulo: 'Precisa de ajuda?', texto: 'Toque em ? a qualquer hora para rever este tutorial completo, ver só o tutorial da tela em que você está ou consultar as perguntas frequentes.' },
+  { titulo: 'Pronto! ✅', texto: 'Qualquer dúvida, é só tocar no ? no topo.' },
 ]
 export const passosTour = (user) => (user.role === 'pcm' ? PCM.filter((p) => !p.admin || user.admin) : LEITOR)
