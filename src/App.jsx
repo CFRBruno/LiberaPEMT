@@ -10,10 +10,24 @@ import Users from './components/Users.jsx'
 import Brand from './components/Brand.jsx'
 import Frota from './components/Frota.jsx'
 import TaxaPill from './components/TaxaPill.jsx'
+import { useNovos } from './lib/novos.js'
 import { categoria, tipoUsuario } from './lib/constants.js'
 
 const PCM_TABS = [['plan', 'Planejamento'], ['tasks', 'Tarefas do dia'], ['chart', 'Evolução'], ['frota', 'Frota'], ['hist', 'Histórico'], ['import', 'Importar'], ['users', 'Membros']]
 const TEC_TABS = [['tasks', 'Tarefas do dia']] // leitores: tela única, sem abas
+
+// Sino de avisos (só leitores): serviços novos atribuídos a mim
+function Sino({ user }) {
+  const { novos } = useNovos(user)
+  const n = novos.length
+  useEffect(() => { document.title = n ? `(${n}) LiberaPEMT` : 'LiberaPEMT' }, [n])
+  useEffect(() => { if (n) navigator.vibrate?.([120, 60, 120]) }, [n])
+  if (!n) return null
+  return (
+    <button onClick={() => document.getElementById('novos')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} aria-label={`${n} serviços novos`}
+      className="alert-pulse flex shrink-0 items-center gap-1.5 rounded-lg bg-brand px-2.5 py-1.5 text-sm">🔔 <b className="tagid">{n}</b></button>
+  )
+}
 
 // Chevron fino que indica o atalho ← / → (só em telas grandes)
 const Seta = ({ dir, on, onClick }) => (
@@ -64,7 +78,7 @@ export default function App() {
       <header className="sticky top-0 z-20 border-b border-brand/40 bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1600px] items-center gap-3 px-3 py-2">
           <Brand />
-          <div className="ml-auto"><TaxaPill onClick={() => pcm && setTab('frota')} /></div>
+          <div className="ml-auto flex items-center gap-2">{!pcm && <Sino user={user} />}<TaxaPill onClick={() => pcm && setTab('frota')} /></div>
           {pcm && <span className="label hidden lg:block" title="Use as setas ← → para trocar de aba">{user.nome} · {tipoUsuario(user)} · {categoria(user)}</span>}
           <button onClick={() => store.auth.signOut()} className="rounded-lg border px-3 py-1.5 text-sm">Sair</button>
         </div>

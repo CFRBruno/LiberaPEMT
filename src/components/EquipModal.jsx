@@ -22,9 +22,9 @@ export default function EquipModal({ eq, users, onClose }) {
   const nome = (un) => users.find((u) => u.username === un)?.nome || un
   const upd = (id, patch) => setServicos((l) => l.map((s) => (s.id === id ? { ...s, ...patch } : s)))
   const setRes = (s, r) => upd(s.id, { resultado: r, dataRealizacao: r === 'realizado' ? s.dataRealizacao || todayISO() : s.dataRealizacao || null })
-  const addResp = (s, un) => un && upd(s.id, { resp: [...(s.resp || []), un] })
+  const addResp = (s, un) => un && upd(s.id, { resp: [...(s.resp || []), un], atribuicoes: { ...(s.atribuicoes || {}), [un]: new Date().toISOString() } })
   const rmResp = (s, un) => upd(s.id, { resp: (s.resp || []).filter((x) => x !== un) })
-  const novo = (tipo) => setServicos((l) => [...l, { id: Math.random().toString(36).slice(2, 9), tipo, resultado: 'pendente', resp: [], obs: '', dataRealizacao: null }])
+  const novo = (tipo) => setServicos((l) => [...l, { id: Math.random().toString(36).slice(2, 9), tipo, resultado: 'pendente', resp: [], obs: '', dataRealizacao: null, criadoEm: new Date().toISOString(), atribuicoes: {} }])
   const save = async () => {
     await store.batch([{ col: 'equipamentos', id: eq.id, merge: true, data: { dia: dia || null, obs, servicos } }])
     onClose()
