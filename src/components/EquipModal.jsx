@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../lib/store.js'
 import { autoResp, RESULTADOS, SERVICOS, SETORES } from '../lib/constants.js'
+import { EquipIcon, equipTexto } from './EquipIcon.jsx'
 import { addDays, dow, fmtBRtime, fmtShort, todayISO, weekStart } from '../lib/dates.js'
 
 export default function EquipModal({ eq, users, onClose }) {
@@ -23,7 +24,7 @@ export default function EquipModal({ eq, users, onClose }) {
     <div data-modal className="fixed inset-0 z-30 flex items-end justify-center bg-black/50 sm:items-center" onClick={onClose}>
       <div className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl bg-panel p-4 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between">
-          <div><h2 className="text-lg font-bold">{eq.tag}</h2><p className="text-sm text-mute">{eq.modelo}</p><p className="truncate text-xs text-mute">{eq.descricao}</p>
+          <div><h2 className="text-lg font-bold">{eq.tag}</h2><p className="flex items-center gap-2 text-sm text-mute"><EquipIcon e={eq} size={20} />{eq.modelo}<span className="label !text-[.65rem]">{equipTexto(eq)}</span></p><p className="truncate text-xs text-mute">{eq.descricao}</p>
             <p className="text-xs text-mute">{eq.status} · {eq.dias ?? '?'} dias · últ. mov. {fmtBRtime(eq.ultMov)}</p></div>
           <button onClick={onClose} className="text-2xl leading-none">×</button>
         </div>

@@ -23,6 +23,7 @@ const FIELDS = {
   descricao: ['equipamento', 'descricao'],
   status: ['status'],
   modelo: ['modelo'],
+  marca: ['marca'],
   dias: ['dias st atual', 'dias no status', 'dias status atual', 'dias'],
   ultMov: ['ultima mov', 'ultima movimentacao', 'ultima modificacao', 'data ult modificacao'],
 }
@@ -46,6 +47,7 @@ export function rowsToEquipamentos(rows) {
       tag,
       descricao: String(r[idx.descricao] ?? '').trim(),
       modelo: String(r[idx.modelo] ?? '').trim(),
+      marca: String(r[idx.marca] ?? '').trim(),
       status: String(r[idx.status] ?? '').trim(),
       dias: Number.isNaN(dias) ? null : dias,
       ultMov: toStamp(r[idx.ultMov]),

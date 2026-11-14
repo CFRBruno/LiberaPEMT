@@ -1,6 +1,7 @@
 import { dow, fmtShort, semanasUteis, todayISO } from '../lib/dates.js'
 import { isLiberado } from '../lib/liberado.js'
 import { STATUS_CLS } from '../lib/constants.js'
+import { EquipIcon } from './EquipIcon.jsx'
 
 // Visão mensal: calendário só com dias úteis (Seg–Sex). No celular vira lista vertical.
 export default function Mensal({ mes, ativos, semData, move, onOpen, card }) {
@@ -17,7 +18,7 @@ export default function Mensal({ mes, ativos, semData, move, onOpen, card }) {
         <b className="tagid truncate">{e.tag}</b>
         <span className={`h-2 w-2 shrink-0 rounded-full ${isLiberado(e) ? 'bg-green-500' : e.status === 'Manutenção' ? 'bg-brand' : 'bg-sky-400'}`} title={e.status} />
       </div>
-      <div className="truncate text-[10px] text-mute">{e.modelo}</div>
+      <div className="flex items-center gap-1 text-[10px] text-mute"><EquipIcon e={e} size={11} /><span className="truncate">{e.modelo}</span></div>
       {!!e.servicos?.length && <div className="mt-0.5 flex flex-wrap gap-0.5">{e.servicos.map((s) => <span key={s.id} className={`rounded px-1 text-[9px] ${s.resultado === 'realizado' ? 'bg-green-500/20 text-green-300' : 'bg-slate-500/20 text-slate-300'}`}>{s.tipo}</span>)}</div>}
     </div>
   )

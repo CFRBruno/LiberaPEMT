@@ -3,6 +3,7 @@ import { useCol, useStore } from '../lib/store.js'
 import { addDays, addMes, dow, fmtShort, MESES, proxDiaUtil, todayISO, weekStart } from '../lib/dates.js'
 import Mensal from './Mensal.jsx'
 import TaxaBanner from './TaxaBanner.jsx'
+import { EquipIcon, Legenda } from './EquipIcon.jsx'
 import { STATUS_CLS } from '../lib/constants.js'
 import { ServiceChip } from './ServiceChips.jsx'
 import { isLiberado } from '../lib/liberado.js'
@@ -32,7 +33,7 @@ export default function Kanban({ user, onFrota }) {
         <b className="tagid text-sm">{e.tag}{isLiberado(e) && <span className="ml-1 text-green-400">✔ Liberado</span>}</b>
         <span className={`rounded-lg px-1.5 text-[10px] ${STATUS_CLS[e.status] || 'bg-panel2'}`}>{e.status}</span>
       </div>
-      <div className="truncate text-xs text-mute">{e.modelo}</div>
+      <div className="flex items-center gap-1.5 text-xs text-mute"><EquipIcon e={e} size={15} /><span className="truncate">{e.modelo}</span></div>
       <div className="mt-0.5 text-[11px] text-mute">{e.dias ?? '?'} dias no status</div>
       {!!e.servicos?.length && <div className="mt-1 flex flex-wrap gap-1">{e.servicos.map((s) => <ServiceChip key={s.id} s={s} />)}</div>}
       {e.status === 'Manutenção' && !isLiberado(e) && !e.servicos?.length && <div className="mt-1 text-[11px] text-red-400">⚠ sem serviços definidos</div>}
@@ -101,7 +102,7 @@ export default function Kanban({ user, onFrota }) {
         <div className="tab-enter"><Mensal mes={mes} ativos={ativos} semData={semData} move={move} onOpen={setOpen} card={card} /></div>
       ) : (<>
       {foraSemana > 0 && <p className="mb-2 text-xs text-mute">{foraSemana} equipamento(s) planejado(s) em outras semanas.</p>}
-      <p className="mb-2 hidden text-xs text-mute lg:block">Arraste os cartões entre as colunas. Setas ← → trocam de aba.</p>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1"><p className="hidden text-xs text-mute lg:block">Arraste os cartões entre as colunas. Setas ← → trocam de aba.</p><Legenda /></div>
       {/* atalhos de dia (só celular/tablet) */}
       <div className="mb-2 flex gap-1 overflow-x-auto lg:hidden">
         {cols.map((c) => (

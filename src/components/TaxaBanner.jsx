@@ -6,8 +6,8 @@ export default function TaxaBanner({ onFrota }) {
   const n = nivel(taxa, meta)
   const escala = Math.max(meta * 3, taxa ?? 0, 1)
   if (total == null) return (
-    <button onClick={onFrota} className="corners mb-3 w-full rounded-xl border border-dashed bg-panel p-3 text-left text-sm text-mute">
-      Defina a <b className="text-brand">frota total</b> para calcular a taxa de indisponibilidade →
+    <button onClick={onFrota} className="corners mb-3 w-full rounded-xl border border-dashed bg-panel p-3 truncate text-left text-sm text-mute">
+      Defina a <b className="text-brand">frota total</b> para ver a taxa →
     </button>
   )
   return (

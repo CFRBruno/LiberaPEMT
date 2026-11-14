@@ -4,6 +4,7 @@ import { addDays, dow, fmtBR, fmtShort, proxDiaUtil, todayISO, weekStart } from 
 import { respEfetivos, STATUS_CLS } from '../lib/constants.js'
 import { StatusPill } from './ServiceChips.jsx'
 import { isLiberado } from '../lib/liberado.js'
+import { EquipIcon, equipTexto } from './EquipIcon.jsx'
 
 // Visão da mão de obra (somente leitura, atualiza em tempo real).
 export default function Tasks({ user }) {
@@ -36,7 +37,8 @@ export default function Tasks({ user }) {
           <article key={e.id} className={`rounded-xl p-3 shadow ${isLiberado(e) ? 'bg-green-500/10 ring-1 ring-green-500' : 'bg-panel'}`}>
             <div className="flex items-center justify-between"><b className="tagid text-lg">{e.tag}{isLiberado(e) && <span className="ml-2 text-sm text-green-400">✔ Liberado</span>}</b>
               <span className={`rounded-lg px-2 text-xs ${STATUS_CLS[e.status] || 'bg-panel2'}`}>{e.status}</span></div>
-            <p className="text-sm text-mute">{e.modelo} · {e.dias ?? '?'} dias no status</p>
+            <p className="flex items-center gap-2 text-sm text-mute"><EquipIcon e={e} size={20} /><span className="min-w-0 truncate">{e.modelo} · {e.dias ?? '?'} dias no status</span></p>
+            {equipTexto(e) && <p className="label !text-[.65rem]">{equipTexto(e)}</p>}
             {e.obs && <p className="mt-1 rounded-lg bg-panel2 p-1 text-sm">📝 {e.obs}</p>}
             <ul className="mt-2 space-y-2">
               {e.servicos.map((s) => (
